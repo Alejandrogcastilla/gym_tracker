@@ -104,13 +104,21 @@ export function TodayNutritionDonut({ summary, entries, loading, error }: TodayN
           flexDirection: 'column',
           gap: 12,
           width: '100%',
+          boxSizing: 'border-box',
         }}
       >
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
           <h2 style={{ fontSize: 18 }}>Nutrición de hoy</h2>
           <span style={{ fontSize: 14, color: '#4b5563' }}>{total} kcal</span>
         </header>
-        <div style={{ height: 260 }}>
+        <div
+          style={{
+            height: 260,
+            width: '100%',
+            maxWidth: 320,
+            margin: '0 auto',
+          }}
+        >
           <ResponsivePie
             data={data}
             margin={{ top: 20, right: 40, bottom: 40, left: 40 }}
@@ -141,9 +149,8 @@ export function TodayNutritionDonut({ summary, entries, loading, error }: TodayN
             padding: 16,
             borderRadius: 8,
             border: '1px solid #e5e7eb',
-            width: '80%',
-            marginLeft: 'auto',
-            marginRight: 'auto',
+            width: '100%',
+            boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
             gap: 10,

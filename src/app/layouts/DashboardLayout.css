@@ -2,51 +2,82 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-.app-header {
-  height: 56px;
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #e5e7eb;
-  background-color: #ffffff;
-  gap: 24px;
-}
-
-.app-header__brand a {
-  font-weight: 600;
-  text-decoration: none;
-  color: #111827;
-}
-
-.app-header__nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-}
-
-.app-header__link {
-  font-size: 14px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  text-decoration: none;
-  color: #4b5563;
-}
-
-.app-header__link--active {
-  border-color: #d1d5db;
-  background-color: #f9fafb;
-}
-
-.app-header__user {
-  font-size: 14px;
-  color: #4b5563;
+  position: relative;
 }
 
 .app-main {
   flex: 1;
+  padding-bottom: 64px;
+  display: flex;
+  justify-content: center;
+}
+
+.app-main > main {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.app-profile-button {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #111827;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.16);
+}
+
+.app-profile-button .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.app-bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 56px;
+  padding: 6px 20px 10px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.app-bottom-nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  text-decoration: none;
+  color: #6b7280;
+  font-size: 11px;
+}
+
+.app-bottom-nav__item .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.app-bottom-nav__item--active {
+  color: #22c55e;
+}
+
+.app-bottom-nav__item--active .material-symbols-outlined {
+  color: #22c55e;
+}
+
+.app-bottom-nav__label {
+  line-height: 1;
 }

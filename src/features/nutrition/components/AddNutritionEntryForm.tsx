@@ -116,21 +116,34 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
         borderRadius: 8,
         border: '1px solid #e5e7eb',
         width: '100%',
+        boxSizing: 'border-box',
+        minHeight: 420,
       }}
     >
-      <h2 style={{ fontSize: 18, marginBottom: 12 }}>Añadir registro de nutrición</h2>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 4,
+          marginBottom: 16,
+          padding: 4,
+          borderRadius: 999,
+          backgroundColor: '#f3f4f6',
+        }}
+      >
         <button
           type="button"
           onClick={() => setMode('manual')}
           style={{
-            padding: '6px 12px',
+            flex: 1,
+            padding: '8px 12px',
             borderRadius: 999,
-            border: '1px solid #d1d5db',
-            backgroundColor: mode === 'manual' ? '#111827' : '#f9fafb',
+            border: mode === 'manual' ? '1px solid #22c55e' : '1px solid transparent',
+            backgroundColor: mode === 'manual' ? '#22c55e' : '#ffffff',
             color: mode === 'manual' ? '#ffffff' : '#111827',
             fontSize: 13,
             cursor: 'pointer',
+            transition: 'background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease',
+            boxShadow: mode === 'manual' ? '0 1px 3px rgba(15, 23, 42, 0.18)' : 'none',
           }}
         >
           Inserción manual
@@ -139,13 +152,16 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
           type="button"
           onClick={() => setMode('ai')}
           style={{
-            padding: '6px 12px',
+            flex: 1,
+            padding: '8px 12px',
             borderRadius: 999,
-            border: '1px solid #d1d5db',
-            backgroundColor: mode === 'ai' ? '#111827' : '#f9fafb',
+            border: mode === 'ai' ? '1px solid #22c55e' : '1px solid transparent',
+            backgroundColor: mode === 'ai' ? '#22c55e' : '#ffffff',
             color: mode === 'ai' ? '#ffffff' : '#111827',
             fontSize: 13,
             cursor: 'pointer',
+            transition: 'background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease',
+            boxShadow: mode === 'ai' ? '0 1px 3px rgba(15, 23, 42, 0.18)' : 'none',
           }}
         >
           Por AI
@@ -164,7 +180,7 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               placeholder="Ej. Desayuno, Comida post-entreno..."
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db' }}
+              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', boxSizing: 'border-box' }}
             />
           </div>
 
@@ -178,7 +194,7 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
               onChange={(e) => setNotas(e.target.value)}
               rows={3}
               placeholder="Detalles adicionales que quieras recordar de esta comida."
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', resize: 'vertical' }}
+              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', resize: 'vertical', boxSizing: 'border-box' }}
             />
           </div>
 
@@ -192,7 +208,7 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
               inputMode="decimal"
               value={proteinas}
               onChange={(e) => setProteinas(e.target.value)}
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db' }}
+              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', boxSizing: 'border-box' }}
             />
           </div>
 
@@ -206,7 +222,7 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
               inputMode="decimal"
               value={hidratos}
               onChange={(e) => setHidratos(e.target.value)}
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db' }}
+              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', boxSizing: 'border-box' }}
             />
           </div>
 
@@ -220,7 +236,7 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
               inputMode="decimal"
               value={verduras}
               onChange={(e) => setVerduras(e.target.value)}
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db' }}
+              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', boxSizing: 'border-box' }}
             />
           </div>
 
@@ -234,7 +250,7 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
               inputMode="decimal"
               value={grasas}
               onChange={(e) => setGrasas(e.target.value)}
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db' }}
+              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', boxSizing: 'border-box' }}
             />
           </div>
 
@@ -250,6 +266,8 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
               fontSize: 14,
               cursor: 'pointer',
               opacity: saving ? 0.8 : 1,
+              display: 'block',
+              margin: '16px auto 0',
             }}
           >
             {saving ? 'Guardando...' : 'Añadir registro'}

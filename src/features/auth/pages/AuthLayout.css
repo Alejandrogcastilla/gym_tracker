@@ -4,32 +4,40 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
+  background-color: #f9fafb;
 }
 
 .auth-card {
   width: 100%;
-  max-width: 480px;
-  padding: 24px;
-  border-radius: 8px;
+  max-width: 440px;
+  padding: 24px 24px 24px;
+  border-radius: 18px;
   border: 1px solid #e5e7eb;
   background-color: #ffffff;
+  box-shadow: 0 16px 35px rgba(15, 23, 42, 0.08);
 }
 
 .auth-card__title {
-  margin: 0 0 16px;
-  font-size: 20px;
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.auth-card__subtitle {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: #6b7280;
 }
 
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .auth-form__field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .auth-form__label {
@@ -39,9 +47,17 @@
 .auth-form__input,
 .auth-form__select {
   width: 100%;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 9px 10px;
+  border-radius: 999px;
   border: 1px solid #d1d5db;
+  font-size: 14px;
+}
+
+.auth-form__input:focus,
+.auth-form__select:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 1px #22c55e33;
 }
 
 .auth-form__row {
@@ -56,10 +72,29 @@
 .auth-form__submit {
   width: 100%;
   padding: 10px;
-  border-radius: 4px;
+  border-radius: 999px;
   border: none;
-  background-color: #111827;
+  background-color: #22c55e;
   color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+}
+
+.auth-form__submit:hover:not(:disabled) {
+  background-color: #16a34a;
+  box-shadow: 0 8px 18px rgba(34, 197, 94, 0.35);
+}
+
+.auth-form__submit:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px rgba(34, 197, 94, 0.25);
+}
+
+.auth-form__submit:disabled {
+  opacity: 0.7;
+  cursor: default;
 }
 
 .auth-message {
@@ -76,8 +111,28 @@
 }
 
 .auth-links {
-  margin-top: 16px;
+  margin-top: 18px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.auth-links a {
+  color: #0ea5e9;
+  text-decoration: none;
+}
+
+.auth-links a:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+  .auth-page {
+    padding: 40px;
+  }
+
+  .auth-card {
+    max-width: 420px;
+  }
 }

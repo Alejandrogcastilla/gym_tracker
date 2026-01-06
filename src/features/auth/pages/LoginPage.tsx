@@ -31,6 +31,7 @@ export function LoginPage() {
     <main className="auth-page">
       <section className="auth-card">
         <h1 className="auth-card__title">Iniciar sesión</h1>
+        <p className="auth-card__subtitle">Vuelve a tu progreso de nutrición y entrenos.</p>
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="auth-form__field">
             <label className="auth-form__label" htmlFor="email">
