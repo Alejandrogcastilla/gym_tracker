@@ -1,0 +1,117 @@
+.progress-overview {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.progress-overview__card {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+}
+
+.progress-overview__title {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.progress-overview__status {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.progress-overview__status--error {
+  color: #b91c1c;
+}
+
+.progress-overview__chart-wrapper {
+  margin-top: 8px;
+}
+
+.progress-overview__chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.progress-overview__chart-summary {
+  margin-top: 8px;
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.progress-overview__chart-summary > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.progress-overview__chart-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.progress-overview__chart-value {
+  font-weight: 600;
+}
+
+.progress-overview__trends {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.progress-overview__trends-title {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.progress-overview__trends-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.progress-overview__trend-card {
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.progress-overview__trend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.progress-overview__trend-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.progress-overview__trend-arrow {
+  font-size: 14px;
+}
+
+.progress-overview__trend-description {
+  margin: 0;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+@media (min-width: 900px) {
+  .progress-overview {
+    flex-direction: row;
+  }
+
+  .progress-overview__card,
+  .progress-overview__trends {
+    flex: 1;
+  }
+}

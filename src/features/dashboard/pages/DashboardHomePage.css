@@ -1,0 +1,382 @@
+.dashboard-page {
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dashboard-container {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  max-width: 960px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.dashboard-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.dashboard-tab {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #111827;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.dashboard-tab--active {
+  border-color: #111827;
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.dashboard-header-text {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.dashboard-main-nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.dashboard-main-nav__button {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #111827;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.dashboard-main-nav__button--active {
+  border-color: #111827;
+}
+
+.dashboard-views {
+  margin-top: 8px;
+  overflow: hidden;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dashboard-views__inner {
+  display: flex;
+  width: 300%;
+  transition: transform 0.3s ease;
+}
+
+.dashboard-view {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.dashboard-views--nutrition .dashboard-views__inner {
+  transform: translateX(0%);
+}
+
+.dashboard-views--history .dashboard-views__inner {
+  transform: translateX(-100%);
+}
+
+.dashboard-views--progress .dashboard-views__inner {
+  transform: translateX(-200%);
+}
+
+.dashboard-nutrition {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dashboard-today-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dashboard-add-entry-button {
+  align-self: center;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #111827;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.dashboard-add-entry-button:hover {
+  background-color: #f3f4f6;
+}
+
+.dashboard-nutrition-tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dashboard-nutrition-tab {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #111827;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.dashboard-nutrition-tab--active {
+  border-color: #111827;
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.dashboard-history-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dashboard-progress-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dashboard-progress-tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.dashboard-progress-tab {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #111827;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.dashboard-progress-tab--active {
+  border-color: #111827;
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.dashboard-calendar-card {
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  max-width: 360px;
+}
+
+.dashboard-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.dashboard-calendar-nav {
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  cursor: pointer;
+}
+
+.dashboard-calendar-month {
+  font-weight: 600;
+  text-transform: capitalize;
+  font-size: 13px;
+}
+
+.dashboard-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.dashboard-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.dashboard-calendar-empty {
+  height: 32px;
+}
+
+.dashboard-calendar-day {
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: #111827;
+}
+
+.dashboard-calendar-day--selected {
+  border-width: 2px;
+  border-color: #111827;
+}
+
+.dashboard-calendar-day--hasData {
+  background-color: #dcfce7;
+}
+
+.dashboard-calendar-day-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background-color: #16a34a;
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+}
+
+.dashboard-calendar-day-today {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background-color: #3b82f6;
+}
+
+.dashboard-calendar-loading {
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.dashboard-calendar-error {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #b91c1c;
+}
+
+.dashboard-calendar-legend {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.dashboard-history-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.dashboard-history-tab {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #111827;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.dashboard-history-tab--active {
+  border-color: #111827;
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.dashboard-heatmap-wrapper {
+  margin-top: 12px;
+}
+
+.dashboard-heatmap {
+  display: flex;
+  gap: 4px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.dashboard-heatmap-week {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dashboard-heatmap-day {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background-color: #e5e7eb;
+}
+
+.dashboard-heatmap-day--hasData {
+  background-color: #16a34a;
+}
+
+.dashboard-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background-color: rgba(15, 23, 42, 0.45);
+}
+
+.dashboard-modal {
+  max-width: 520px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: auto;
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 16px 16px 20px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.35);
+}
+
+.dashboard-modal__close {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+}

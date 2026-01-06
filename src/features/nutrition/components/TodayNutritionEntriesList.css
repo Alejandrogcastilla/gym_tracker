@@ -1,0 +1,139 @@
+.nutrition-list {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.nutrition-list__title {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.nutrition-list__empty {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.nutrition-list__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.nutrition-list__item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.nutrition-list__item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.nutrition-list__header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nutrition-list__button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  background: #2563eb;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.nutrition-list__button--ghost {
+  background: transparent;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.nutrition-list__button--danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.nutrition-list__time {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.nutrition-list__kcal {
+  font-size: 12px;
+  color: #111827;
+}
+
+.nutrition-list__macros {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.nutrition-list__macros-edit {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.nutrition-list__macros-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.75rem;
+}
+
+.nutrition-list__macros-field > span {
+  font-weight: 600;
+}
+
+.nutrition-list__macros-field input {
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.8rem;
+}
+
+.nutrition-list__field {
+  margin-top: 4px;
+}
+
+.nutrition-list__label {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 12px;
+}
+
+.nutrition-list__input,
+.nutrition-list__textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.nutrition-list__textarea {
+  resize: vertical;
+}
