@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 16px;
   margin-top: 24px;
-  align-items: center;
+  align-items: stretch;
 }
 
 @media (min-width: 900px) {
@@ -20,7 +20,7 @@
   border: 1px solid #e5e7eb;
   background-color: #ffffff;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-  max-width: 480px;
+  width: 100%;
   box-sizing: border-box;
 }
 
@@ -68,14 +68,14 @@
   padding: 8px 16px;
   border-radius: 999px;
   border: none;
-  background-color: #111827;
+  background-color: #04af40;
   color: #ffffff;
   font-size: 14px;
   cursor: pointer;
 }
 
 .measures-form__button:not(:disabled):hover {
-  background-color: #0f172a;
+  background-color: #039138;
 }
 
 .measures-form__button:disabled {
@@ -99,6 +99,17 @@
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   background-color: #f9fafb;
+}
+
+@media (min-width: 900px) {
+  .measures {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .measures-form {
+    max-width: 480px;
+  }
 }
 
 .measures-form__info-button {

@@ -9,8 +9,8 @@
 .dashboard-container {
   margin-top: 12px;
   padding: 16px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border-radius: 0;
+  border: none;
   width: 100%;
 }
 
@@ -101,7 +101,9 @@
 }
 
 .dashboard-main-nav__button--active {
-  border-color: #111827;
+  border-color: #04af40;
+  background-color: #04af40;
+  color: #ffffff;
 }
 
 .dashboard-views {
@@ -152,14 +154,14 @@
   padding: 8px 16px;
   border-radius: 999px;
   border: 1px solid #d1d5db;
-  background-color: #f9fafb;
-  color: #111827;
+  background-color: #04af40;
+  color: #ffffff;
   font-size: 13px;
   cursor: pointer;
 }
 
 .dashboard-add-entry-button:hover {
-  background-color: #f3f4f6;
+  background-color: #039138;
 }
 
 .dashboard-nutrition-tabs {
@@ -404,10 +406,23 @@
 
 .dashboard-modal__close {
   position: absolute;
-  top: 4px;
-  right: 8px;
+  top: 8px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
   border: none;
-  background: transparent;
-  font-size: 20px;
+  background-color: #dc2626;
+  color: #ffffff;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.dashboard-modal__close:hover {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
 }

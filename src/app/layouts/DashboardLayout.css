@@ -5,39 +5,143 @@
   position: relative;
 }
 
-.app-main {
-  flex: 1;
-  padding-top: 56px;
-  padding-bottom: 64px;
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
-  justify-content: center;
-}
-
-.app-main > main {
-  width: 100%;
-  max-width: 480px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 0;
+  height: 64px;
+  max-width: 880px;
   margin: 0 auto;
+  width: 100%;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.app-profile-button {
-  position: fixed;
-  top: 12px;
-  right: 16px;
-  width: 36px;
-  height: 36px;
+.app-header__left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-logo__dot {
+  width: 30px;
+  height: 30px;
   border-radius: 999px;
-  border: 1px solid #e5e7eb;
-  background-color: #ffffff;
+  background: conic-gradient(from 160deg, var(--primary), var(--accent-blue), var(--accent-orange), var(--primary));
+}
+
+.app-logo__text-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-logo__title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.app-logo__subtitle {
+  font-size: 11px;
+  color: var(--text-soft);
+}
+
+.app-header__date {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.app-header__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-theme-toggle {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
-  text-decoration: none;
-  color: #111827;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.16);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast),
+    transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.app-profile-button .material-symbols-outlined {
+.app-theme-toggle .material-symbols-outlined {
+  font-size: 20px;
+  color: var(--text-main);
+}
+
+.app-theme-toggle:hover {
+  background: rgba(15, 23, 42, 0.08);
+  border-color: rgba(34, 197, 94, 0.7);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.25);
+  transform: translateY(-1px);
+}
+
+.app-profile-pill {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.9);
+  background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.35), transparent 55%),
+    var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main);
+  text-decoration: none;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.app-profile-pill .material-symbols-outlined {
   font-size: 22px;
+}
+
+.app-profile-pill:hover {
+  transform: translateY(-1px);
+  border-color: rgba(34, 197, 94, 0.8);
+}
+
+.app-main {
+  flex: 1;
+  padding: 0 14px 70px;
+}
+
+.app-main__inner {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto 12px;
+}
+
+@media (max-width: 640px) {
+  .app-main {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .app-main__inner {
+    max-width: none;
+    margin: 0 0 12px;
+  }
+}
+
+.route-transition {
+  animation: route-slide-fade var(--transition-normal);
 }
 
 .app-bottom-nav {
@@ -45,38 +149,52 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 56px;
-  padding: 6px 20px 10px;
+  height: 70px;
+  padding: 10px 24px 16px;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
-  background-color: #ffffff;
-  border-top: 1px solid #e5e7eb;
-  box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.08);
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  background-color: var(--bg-surface);
 }
 
 .app-bottom-nav__item {
   flex: 1;
+  max-width: 210px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 6px;
   text-decoration: none;
-  color: #6b7280;
-  font-size: 11px;
+  color: var(--text-soft);
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  transition: background-color var(--transition-fast), color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .app-bottom-nav__item .material-symbols-outlined {
-  font-size: 22px;
+  font-size: 20px;
+}
+
+.app-bottom-nav__item:hover {
+  background-color: rgba(15, 23, 42, 0.25);
+  color: #f9fafb;
+  transform: translateY(-1px);
+}
+
+.app-bottom-nav__item:active {
+  transform: scale(0.97) translateY(0);
 }
 
 .app-bottom-nav__item--active {
-  color: #22c55e;
+  color: #f9fafb;
+  background-color: #04af40;
 }
 
 .app-bottom-nav__item--active .material-symbols-outlined {
-  color: #22c55e;
+  color: inherit;
 }
 
 .app-bottom-nav__label {
@@ -84,35 +202,56 @@
 }
 
 .app-top-nav {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 56px;
-  padding: 6px 20px 10px;
+  position: sticky;
+  top: 64px;
+  z-index: 15;
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto 10px;
+  height: 48px;
+  padding: 0;
+  border-radius: 0;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
   display: flex;
-  justify-content: space-around;
   align-items: center;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  gap: 4px;
 }
 
 .app-top-nav__item {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
+  height: 32px;
+  border-radius: 999px;
   border: none;
   background: transparent;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-muted);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-fast), color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .app-top-nav__item--active {
-  color: #22c55e;
+  background-color: #04af40;
+  color: #f9fafb;
+  transform: translateY(-1px);
+}
+
+.app-top-nav__item:active {
+  transform: scale(0.97);
+}
+
+@keyframes route-slide-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

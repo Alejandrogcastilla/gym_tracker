@@ -119,7 +119,6 @@ export const TodayNutritionEntriesList = memo(function TodayNutritionEntriesList
       <ul className="nutrition-list__items">
         {entries.map((entry) => {
           const isEditing = editingId === entry.id;
-          const timeLabel = entry.fecha.slice(8, 10) + ':00';
           const macros = {
             proteinas: isEditing && editValues ? editValues.proteinas : String(entry.proteinas),
             hidratos: isEditing && editValues ? editValues.hidratos : String(entry.hidratos),
@@ -132,9 +131,7 @@ export const TodayNutritionEntriesList = memo(function TodayNutritionEntriesList
           return (
             <li key={entry.id} className="nutrition-list__item">
               <div className="nutrition-list__item-header">
-                <span className="nutrition-list__time">{timeLabel}</span>
                 <div className="nutrition-list__header-right">
-                  <span className="nutrition-list__kcal">{entry.totalCalories.toFixed(0)} kcal</span>
                   {isEditing ? (
                     <>
                       <button
@@ -213,9 +210,32 @@ export const TodayNutritionEntriesList = memo(function TodayNutritionEntriesList
                   </label>
                 </div>
               ) : (
-                <p className="nutrition-list__macros">
-                  P {entry.proteinas} · H {entry.hidratos} · G {entry.grasas} · V {entry.verduras}
-                </p>
+                <div className="nutrition-list__macros">
+                  <div className="nutrition-list__macros-chips">
+                    <div className="nutrition-list__macro-chip nutrition-list__macro-chip--proteinas">
+                      <span className="nutrition-list__macro-chip-icon">P</span>
+                      <span className="nutrition-list__macro-chip-value">{entry.proteinas}</span>
+                    </div>
+                    <div className="nutrition-list__macro-chip nutrition-list__macro-chip--hidratos">
+                      <span className="nutrition-list__macro-chip-icon">H</span>
+                      <span className="nutrition-list__macro-chip-value">{entry.hidratos}</span>
+                    </div>
+                    <div className="nutrition-list__macro-chip nutrition-list__macro-chip--grasas">
+                      <span className="nutrition-list__macro-chip-icon">G</span>
+                      <span className="nutrition-list__macro-chip-value">{entry.grasas}</span>
+                    </div>
+                    <div className="nutrition-list__macro-chip nutrition-list__macro-chip--verduras">
+                      <span className="nutrition-list__macro-chip-icon">V</span>
+                      <span className="nutrition-list__macro-chip-value">{entry.verduras}</span>
+                    </div>
+                  </div>
+                  <span className="nutrition-list__macros-total">
+                    <span className="nutrition-list__macros-total-label">Total</span>
+                    <span className="nutrition-list__macros-total-value">
+                      {entry.totalCalories.toFixed(0)} kcal
+                    </span>
+                  </span>
+                </div>
               )}
 
               <div className="nutrition-list__field">

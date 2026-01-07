@@ -3,9 +3,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-width: 960px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
 }
 
 .progress-overview__card {
@@ -133,6 +131,12 @@
 }
 
 @media (min-width: 900px) {
+  .progress-overview {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .progress-overview__trends-grid {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }

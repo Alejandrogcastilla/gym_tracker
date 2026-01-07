@@ -40,14 +40,6 @@ export function DashboardHomePage() {
       </nav>
 
       <section className="dashboard-container">
-        <header className="dashboard-header">
-          {nutritionTab === 'overview' && (
-            <p className="dashboard-header-text">Resumen de tu día de hoy.</p>
-          )}
-          {nutritionTab === 'today' && (
-            <p className="dashboard-header-text">Registro de comidas de hoy.</p>
-          )}
-        </header>
 
         <div className="dashboard-nutrition">
           {nutritionTab === 'overview' && (

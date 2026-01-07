@@ -1,9 +1,9 @@
 import { FormEvent, useState } from 'react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { addDoc } from 'firebase/firestore';
-import { collection } from 'firebase/firestore';
+import { addDoc, collection } from 'firebase/firestore';
 import { firebaseDb } from '@services/firebase/firebaseClient';
 import type { NutritionEntry } from '@types/nutrition';
+import './AddNutritionEntryForm.css';
 
 const nutritionCollection = collection(firebaseDb, 'nutricion');
 
@@ -109,69 +109,36 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
   };
 
   return (
-    <section
-      style={{
-        marginTop: 24,
-        padding: 16,
-        borderRadius: 8,
-        border: '1px solid #e5e7eb',
-        width: '100%',
-        boxSizing: 'border-box',
-        minHeight: 420,
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          gap: 4,
-          marginBottom: 16,
-          padding: 4,
-          borderRadius: 999,
-          backgroundColor: '#f3f4f6',
-        }}
-      >
+    <section className="nutrition-entry-modal">
+      <div className="nutrition-entry-modal__tabs">
         <button
           type="button"
           onClick={() => setMode('manual')}
-          style={{
-            flex: 1,
-            padding: '8px 12px',
-            borderRadius: 999,
-            border: mode === 'manual' ? '1px solid #22c55e' : '1px solid transparent',
-            backgroundColor: mode === 'manual' ? '#22c55e' : '#ffffff',
-            color: mode === 'manual' ? '#ffffff' : '#111827',
-            fontSize: 13,
-            cursor: 'pointer',
-            transition: 'background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease',
-            boxShadow: mode === 'manual' ? '0 1px 3px rgba(15, 23, 42, 0.18)' : 'none',
-          }}
+          className={
+            mode === 'manual'
+              ? 'nutrition-entry-modal__tab nutrition-entry-modal__tab--active'
+              : 'nutrition-entry-modal__tab'
+          }
         >
           Inserción manual
         </button>
         <button
           type="button"
           onClick={() => setMode('ai')}
-          style={{
-            flex: 1,
-            padding: '8px 12px',
-            borderRadius: 999,
-            border: mode === 'ai' ? '1px solid #22c55e' : '1px solid transparent',
-            backgroundColor: mode === 'ai' ? '#22c55e' : '#ffffff',
-            color: mode === 'ai' ? '#ffffff' : '#111827',
-            fontSize: 13,
-            cursor: 'pointer',
-            transition: 'background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease',
-            boxShadow: mode === 'ai' ? '0 1px 3px rgba(15, 23, 42, 0.18)' : 'none',
-          }}
+          className={
+            mode === 'ai'
+              ? 'nutrition-entry-modal__tab nutrition-entry-modal__tab--active'
+              : 'nutrition-entry-modal__tab'
+          }
         >
           Por AI
         </button>
       </div>
 
       {mode === 'manual' ? (
-        <form key="manual" onSubmit={handleSubmit}>
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ display: 'block', marginBottom: 4 }} htmlFor="titulo">
+        <form key="manual" onSubmit={handleSubmit} className="nutrition-entry-modal__form">
+          <div className="nutrition-entry-modal__field">
+            <label className="nutrition-entry-modal__label" htmlFor="titulo">
               Título (opcional)
             </label>
             <input
@@ -180,12 +147,12 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               placeholder="Ej. Desayuno, Comida post-entreno..."
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', boxSizing: 'border-box' }}
+              className="nutrition-entry-modal__input"
             />
           </div>
 
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ display: 'block', marginBottom: 4 }} htmlFor="notas">
+          <div className="nutrition-entry-modal__field">
+            <label className="nutrition-entry-modal__label" htmlFor="notas">
               Notas (opcional)
             </label>
             <textarea
@@ -194,104 +161,120 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
               onChange={(e) => setNotas(e.target.value)}
               rows={3}
               placeholder="Detalles adicionales que quieras recordar de esta comida."
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', resize: 'vertical', boxSizing: 'border-box' }}
+              className="nutrition-entry-modal__textarea"
             />
           </div>
 
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ display: 'block', marginBottom: 4 }} htmlFor="proteinas">
-              Proteínas
-            </label>
-            <input
-              id="proteinas"
-              type="number"
-              inputMode="decimal"
-              value={proteinas}
-              onChange={(e) => setProteinas(e.target.value)}
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', boxSizing: 'border-box' }}
-            />
+          <div className="nutrition-entry-modal__grid">
+            <div className="nutrition-entry-modal__field">
+              <label className="nutrition-entry-modal__label" htmlFor="proteinas">
+                Proteínas
+              </label>
+              <input
+                id="proteinas"
+                type="number"
+                inputMode="decimal"
+                value={proteinas}
+                onChange={(e) => setProteinas(e.target.value)}
+                className="nutrition-entry-modal__input"
+              />
+            </div>
+
+            <div className="nutrition-entry-modal__field">
+              <label className="nutrition-entry-modal__label" htmlFor="hidratos">
+                Hidratos de carbono
+              </label>
+              <input
+                id="hidratos"
+                type="number"
+                inputMode="decimal"
+                value={hidratos}
+                onChange={(e) => setHidratos(e.target.value)}
+                className="nutrition-entry-modal__input"
+              />
+            </div>
+
+            <div className="nutrition-entry-modal__field">
+              <label className="nutrition-entry-modal__label" htmlFor="verduras">
+                Frutas / verduras
+              </label>
+              <input
+                id="verduras"
+                type="number"
+                inputMode="decimal"
+                value={verduras}
+                onChange={(e) => setVerduras(e.target.value)}
+                className="nutrition-entry-modal__input"
+              />
+            </div>
+
+            <div className="nutrition-entry-modal__field">
+              <label className="nutrition-entry-modal__label" htmlFor="grasas">
+                Grasas
+              </label>
+              <input
+                id="grasas"
+                type="number"
+                inputMode="decimal"
+                value={grasas}
+                onChange={(e) => setGrasas(e.target.value)}
+                className="nutrition-entry-modal__input"
+              />
+            </div>
           </div>
 
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ display: 'block', marginBottom: 4 }} htmlFor="hidratos">
-              Hidratos de carbono
-            </label>
-            <input
-              id="hidratos"
-              type="number"
-              inputMode="decimal"
-              value={hidratos}
-              onChange={(e) => setHidratos(e.target.value)}
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', boxSizing: 'border-box' }}
-            />
-          </div>
-
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ display: 'block', marginBottom: 4 }} htmlFor="verduras">
-              Frutas / verduras
-            </label>
-            <input
-              id="verduras"
-              type="number"
-              inputMode="decimal"
-              value={verduras}
-              onChange={(e) => setVerduras(e.target.value)}
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', boxSizing: 'border-box' }}
-            />
-          </div>
-
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ display: 'block', marginBottom: 4 }} htmlFor="grasas">
-              Grasas
-            </label>
-            <input
-              id="grasas"
-              type="number"
-              inputMode="decimal"
-              value={grasas}
-              onChange={(e) => setGrasas(e.target.value)}
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', boxSizing: 'border-box' }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={saving}
-            style={{
-              padding: '8px 16px',
-              borderRadius: 4,
-              border: 'none',
-              backgroundColor: '#111827',
-              color: '#fff',
-              fontSize: 14,
-              cursor: 'pointer',
-              opacity: saving ? 0.8 : 1,
-              display: 'block',
-              margin: '16px auto 0',
-            }}
-          >
-            {saving ? 'Guardando...' : 'Añadir registro'}
+          <button type="submit" disabled={saving} className="nutrition-entry-modal__submit">
+            {saving ? 'Guardando…' : 'Guardar registro'}
           </button>
 
-          {error ? <p style={{ marginTop: 8, color: '#b91c1c' }}>{error}</p> : null}
-          {success ? <p style={{ marginTop: 8, color: '#15803d' }}>{success}</p> : null}
+          {error && <p className="nutrition-entry-modal__error">{error}</p>}
+          {success && <p className="nutrition-entry-modal__success">{success}</p>}
         </form>
       ) : (
-        <form key="ai" onSubmit={handleAiSubmit}>
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ display: 'block', marginBottom: 4 }} htmlFor="ai-image">
-              Imagen de la comida
+        <form key="ai" onSubmit={handleAiSubmit} className="nutrition-entry-modal__form">
+          <div className="nutrition-entry-modal__field">
+            <label className="nutrition-entry-modal__label" htmlFor="ai-titulo">
+              Título (opcional)
             </label>
             <input
-              id="ai-image"
-              type="file"
-              accept="image/*"
-              onChange={(e) => setAiFile(e.target.files && e.target.files[0] ? e.target.files[0] : null)}
+              id="ai-titulo"
+              type="text"
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+              placeholder="Ej. Desayuno, Comida post-entreno..."
+              className="nutrition-entry-modal__input"
             />
           </div>
 
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ display: 'block', marginBottom: 4 }} htmlFor="ai-info">
+          <div className="nutrition-entry-modal__field">
+            <label className="nutrition-entry-modal__label" htmlFor="ai-file">
+              Sube una foto del plato
+            </label>
+            <label htmlFor="ai-file" className="nutrition-entry-modal__upload">
+              <div className="nutrition-entry-modal__upload-text">
+                <span className="nutrition-entry-modal__upload-title">Seleccionar foto</span>
+              </div>
+              <div className="nutrition-entry-modal__upload-icon">
+                <span className="material-symbols-outlined">photo_camera</span>
+              </div>
+            </label>
+            <input
+              id="ai-file"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0] ?? null;
+                setAiFile(file);
+              }}
+              className="nutrition-entry-modal__file-input"
+            />
+            {aiFile && (
+              <p className="nutrition-entry-modal__hint">Archivo seleccionado: {aiFile.name}</p>
+            )}
+          </div>
+
+          <div className="nutrition-entry-modal__field">
+            <label className="nutrition-entry-modal__label" htmlFor="ai-info">
               Información adicional (opcional)
             </label>
             <textarea
@@ -299,29 +282,19 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
               value={aiInfo}
               onChange={(e) => setAiInfo(e.target.value)}
               rows={3}
-              placeholder="Ej. Cantidades aproximadas, marca del producto, etc."
-              style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid #d1d5db', resize: 'vertical' }}
+              placeholder="Ej. Comida post-entreno, muy cargada de verduras..."
+              className="nutrition-entry-modal__textarea"
             />
           </div>
 
-          <button
-            type="submit"
-            style={{
-              padding: '8px 16px',
-              borderRadius: 4,
-              border: 'none',
-              backgroundColor: '#111827',
-              color: '#fff',
-              fontSize: 14,
-              cursor: 'pointer',
-            }}
-          >
-            Enviar (demo)
-          </button>
-
-          <p style={{ marginTop: 8, fontSize: 12, color: '#6b7280' }}>
-            Por ahora este modo solo hace console.log de la imagen en base64 y del texto introducido.
+          <p className="nutrition-entry-modal__hint">
+            * De momento la inserción por IA solo registra la información para que puedas probar el
+            flujo. Más adelante se conectará con un modelo que estime los macros automáticamente.
           </p>
+
+          <button type="submit" className="nutrition-entry-modal__submit">
+            Probar inserción por IA
+          </button>
         </form>
       )}
     </section>

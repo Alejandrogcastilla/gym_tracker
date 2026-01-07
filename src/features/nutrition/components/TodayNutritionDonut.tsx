@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { ResponsivePie } from '@nivo/pie';
 import type { TodayNutritionSummary, TodayNutritionEntrySummary } from '@types/nutrition';
 import './TodayNutritionDonut.css';
@@ -9,25 +10,49 @@ interface TodayNutritionDonutProps {
   error: string | null;
 }
 
-const SEGMENT_COLORS = ['#6366f1', '#0ea5e9', '#22c55e', '#f97316', '#facc15', '#fb7185'];
-
-const SEGMENT_COLOR_CLASSNAMES = [
-  'today-nutrition__value--segment-0',
-  'today-nutrition__value--segment-1',
-  'today-nutrition__value--segment-2',
-  'today-nutrition__value--segment-3',
-  'today-nutrition__value--segment-4',
-  'today-nutrition__value--segment-5',
-];
-
 const MACRO_COLORS: Record<string, string> = {
-  proteinas: '#6366f1', // índigo
-  hidratos: '#f97316', // naranja
-  grasas: '#fb7185', // rosado
-  verduras: '#22c55e', // verde
+  // Rojo: proteínas, antioxidantes
+  proteinas: '#ef4444',
+  // Amarillo/Naranja: hidratos, vitamina C
+  hidratos: '#f97316',
+  // Marrón/Blanco: grasas saludables
+  grasas: '#92400e',
+  // Verde: vitaminas, minerales, fibra
+  verduras: '#22c55e',
 };
 
 export function TodayNutritionDonut({ summary, entries, loading, error }: TodayNutritionDonutProps) {
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [hoveredMacroSegment, setHoveredMacroSegment] = useState<{
+    macroKey: string;
+    value: number;
+    centerPercent: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const mq = window.matchMedia('(max-width: 640px)');
+    const handleChange = (event: MediaQueryListEvent | MediaQueryList) => {
+      setIsSmallScreen(event.matches);
+    };
+
+    // Initial value
+    handleChange(mq);
+
+    if (typeof mq.addEventListener === 'function') {
+      mq.addEventListener('change', handleChange as (e: MediaQueryListEvent) => void);
+      return () => mq.removeEventListener('change', handleChange as (e: MediaQueryListEvent) => void);
+    }
+
+    // Fallback para navegadores antiguos
+    // eslint-disable-next-line deprecation/deprecation
+    mq.addListener(handleChange as (this: MediaQueryList, ev: MediaQueryListEvent) => void);
+    return () => {
+      // eslint-disable-next-line deprecation/deprecation
+      mq.removeListener(handleChange as (this: MediaQueryList, ev: MediaQueryListEvent) => void);
+    };
+  }, []);
 
   if (loading) {
     return <p>Cargando nutrición de hoy...</p>;
@@ -60,13 +85,11 @@ export function TodayNutritionDonut({ summary, entries, loading, error }: TodayN
     },
     {
       key: 'verduras' as const,
-      label: 'Fruta / verdura',
+      label: 'Fruta / Verdura',
       total: summary?.verduras ?? 0,
       getValue: (entry: TodayNutritionEntrySummary) => entry.verduras,
     },
   ];
-
-  const maxBarValue = Math.max(...macroConfigs.map((item) => item.total), 1);
 
   const data = hasData
     ? [
@@ -106,9 +129,6 @@ export function TodayNutritionDonut({ summary, entries, loading, error }: TodayN
   return (
     <>
       <section className="today-nutrition">
-        <header className="today-nutrition__header">
-          <h2 className="today-nutrition__title">Nutrición de hoy</h2>
-        </header>
         <div className="today-nutrition__chart">
           <ResponsivePie
             data={data}
@@ -120,12 +140,39 @@ export function TodayNutritionDonut({ summary, entries, loading, error }: TodayN
             colors={hasData ? { datum: 'data.color' } : ['#e5e7eb']}
             borderWidth={1}
             borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
-            enableArcLinkLabels={false}
-            arcLabelsSkipAngle={hasData ? 10 : 360}
-            arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
+            enableArcLabels={false}
+            enableArcLinkLabels={hasData && !isSmallScreen}
+            arcLinkLabel={(datum) =>
+              ((datum.data as { label?: string }).label ?? String(datum.id))
+            }
+            arcLinkLabelsSkipAngle={8}
+            arcLinkLabelsOffset={10}
+            arcLinkLabelsDiagonalLength={14}
+            arcLinkLabelsStraightLength={12}
+            arcLinkLabelsTextColor="#0f172a"
+            arcLinkLabelsThickness={2}
+            arcLinkLabelsColor={{ from: 'color' }}
+            tooltip={({ datum }) => {
+              const label = (datum.data as { label?: string }).label ?? String(datum.id);
+              return (
+                <div
+                  style={{
+                    padding: '6px 10px',
+                    borderRadius: 6,
+                    background: 'white',
+                    boxShadow: '0 4px 14px rgba(15,23,42,0.18)',
+                    fontSize: 12,
+                    color: '#0f172a',
+                  }}
+                >
+                  <strong>{label}</strong>
+                  <div>{`${datum.value} kcal`}</div>
+                </div>
+              );
+            }}
             layers={[
               'arcs',
-              'arcLabels',
+              'arcLinkLabels',
               (layerProps) => (
                 <text
                   key="center-label"
@@ -143,6 +190,22 @@ export function TodayNutritionDonut({ summary, entries, loading, error }: TodayN
             ]}
           />
         </div>
+        {hasData && isSmallScreen && (
+          <div className="today-nutrition__legend">
+            {data.map((item) => (
+              <div key={String(item.id)} className="today-nutrition__legend-item">
+                {'color' in item && (
+                  <span
+                    className="today-nutrition__legend-dot"
+                    style={{ backgroundColor: (item as { color?: string }).color }}
+                  />
+                )}
+                <span className="today-nutrition__legend-label">{item.label}</span>
+                <span className="today-nutrition__legend-value">{item.value} kcal</span>
+              </div>
+            ))}
+          </div>
+        )}
         {!hasData && (
           <div className="today-nutrition__empty">
             <p>0 kcal hoy</p>
@@ -152,14 +215,11 @@ export function TodayNutritionDonut({ summary, entries, loading, error }: TodayN
       </section>
 
       <section className="today-nutrition-macros">
-        <h3 className="today-nutrition-macros__title">Macros</h3>
         {macroConfigs.map((macro) => {
           const segments = entries.map((entry, index) => ({
             index,
             value: macro.getValue(entry),
           }));
-
-          const hasAnySegment = segments.some((seg) => seg.value > 0);
 
           return (
             <div key={macro.key} className="today-nutrition-macros__item">
@@ -173,22 +233,49 @@ export function TodayNutritionDonut({ summary, entries, loading, error }: TodayN
                 </span>
                 <span className="today-nutrition-macros__total">{macro.total} kcal</span>
               </div>
-              <div className="today-nutrition-macros__values">
-                [
-                {hasAnySegment
-                  ? segments.map((segment, index) => {
-                      const value = segment.value;
-                      const className =
-                        SEGMENT_COLOR_CLASSNAMES[segment.index % SEGMENT_COLOR_CLASSNAMES.length];
+              <div className="today-nutrition-macros__bar-wrapper">
+                <div className="today-nutrition-macros__bar">
+                  {macro.total > 0 &&
+                    (() => {
+                      const activeSegments = segments.filter((segment) => segment.value > 0);
+                      let offsetPercent = 0;
 
-                      return (
-                        <span key={segment.index} className={className}>
-                          {` ${value} kcal${index < segments.length - 1 ? ' |' : ''}`}
-                        </span>
-                      );
-                    })
-                  : ' 0 kcal'}
-                ]
+                      return activeSegments.map((segment) => {
+                        const widthPercent = (segment.value / macro.total) * 100;
+                        const centerPercent = offsetPercent + widthPercent / 2;
+                        offsetPercent += widthPercent;
+
+                        return (
+                          <div
+                            key={segment.index}
+                            className="today-nutrition-macros__bar-segment"
+                            style={{
+                              width: `${widthPercent}%`,
+                              backgroundColor: MACRO_COLORS[macro.key],
+                            }}
+                            title={`${macro.label}: ${segment.value} kcal`}
+                            aria-label={`${macro.label}: ${segment.value} kcal`}
+                            onMouseEnter={() =>
+                              setHoveredMacroSegment({
+                                macroKey: macro.key,
+                                value: segment.value,
+                                centerPercent,
+                              })
+                            }
+                            onMouseLeave={() => setHoveredMacroSegment(null)}
+                          />
+                        );
+                      });
+                    })()}
+                </div>
+                {hoveredMacroSegment && hoveredMacroSegment.macroKey === macro.key && (
+                  <div
+                    className="today-nutrition-macros__hover-value"
+                    style={{ left: `${hoveredMacroSegment.centerPercent}%` }}
+                  >
+                    {hoveredMacroSegment.value} kcal
+                  </div>
+                )}
               </div>
             </div>
           );

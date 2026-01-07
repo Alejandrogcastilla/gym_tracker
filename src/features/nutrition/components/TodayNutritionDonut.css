@@ -1,7 +1,8 @@
+/* Contenedor principal del bloque de nutrición de hoy */
 .today-nutrition {
   padding: 16px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border-radius: 0;
+  border: none;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -20,10 +21,47 @@
 }
 
 .today-nutrition__chart {
-  height: 260px;
+  height: 340px;
   width: 100%;
-  max-width: 320px;
+  max-width: 100%;
   margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .today-nutrition__chart {
+    max-width: 320px;
+    height: 260px;
+  }
+}
+
+/* Leyenda para móviles */
+.today-nutrition__legend {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 16px;
+  font-size: 12px;
+}
+
+.today-nutrition__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.today-nutrition__legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.today-nutrition__legend-label {
+  font-weight: 500;
+}
+
+.today-nutrition__legend-value {
+  color: #6b7280;
 }
 
 .today-nutrition__empty {
@@ -40,11 +78,12 @@
   color: #b91c1c;
 }
 
+/* Bloque de macros */
 .today-nutrition-macros {
-  margin-top: 16px;
-  padding: 16px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  margin-top: 8px;
+  padding: 12px 16px 16px;
+  border-radius: 0;
+  border: none;
   width: 100%;
   box-sizing: border-box;
   display: flex;
@@ -77,47 +116,84 @@
   color: #4b5563;
 }
 
+/* (Opcional) Valores de texto por comida, actualmente no se muestran en la UI */
 .today-nutrition-macros__values {
   font-size: 11px;
   color: #6b7280;
 }
 
 .today-nutrition-macros__label--proteinas {
-  color: #6366f1;
+  /* Rojo: proteínas, antioxidantes */
+  color: #ef4444;
 }
 
 .today-nutrition-macros__label--hidratos {
+  /* Amarillo/Naranja: hidratos, vitamina C */
   color: #f97316;
 }
 
 .today-nutrition-macros__label--grasas {
-  color: #fb7185;
+  /* Marrón/Blanco: grasas saludables */
+  color: #92400e;
 }
 
 .today-nutrition-macros__label--verduras {
+  /* Verde: vitaminas, minerales, fibra */
   color: #22c55e;
 }
 
-.today-nutrition__value--segment-0 {
-  color: #6366f1;
+
+/* Barra segmentada por comidas para cada macro */
+.today-nutrition-macros__bar-wrapper {
+  position: relative;
+  margin-top: 4px;
 }
 
-.today-nutrition__value--segment-1 {
-  color: #0ea5e9;
+.today-nutrition-macros__bar {
+  width: 100%;
+  height: 8px;
+  display: flex;
+  gap: 2px;
 }
 
-.today-nutrition__value--segment-2 {
-  color: #22c55e;
+.today-nutrition-macros__bar-segment {
+  height: 100%;
+  border-radius: 999px;
+  transition: transform 150ms ease-out;
 }
 
-.today-nutrition__value--segment-3 {
-  color: #f97316;
+.today-nutrition-macros__bar-segment:hover {
+  transform: translateY(-1px);
 }
 
-.today-nutrition__value--segment-4 {
-  color: #facc15;
+.today-nutrition-macros__hover-value {
+  position: absolute;
+  top: -20px;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #0f172a;
+  background: linear-gradient(135deg, #f9fafb, #e5f9f0);
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.18);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transform-origin: bottom center;
+  animation: today-nutrition-chip-fade-in 120ms ease-out forwards;
 }
 
-.today-nutrition__value--segment-5 {
-  color: #fb7185;
+@keyframes today-nutrition-chip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
 }

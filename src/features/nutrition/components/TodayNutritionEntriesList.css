@@ -39,7 +39,7 @@
 
 .nutrition-list__item-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   margin-bottom: 4px;
 }
@@ -56,15 +56,15 @@
   padding: 0.2rem 0.7rem;
   font-size: 0.75rem;
   cursor: pointer;
-  background: #2563eb;
-  color: #fff;
+  background: #04af40;
+  color: #ffffff;
   white-space: nowrap;
 }
 
 .nutrition-list__button--ghost {
   background: transparent;
-  color: #2563eb;
-  border: 1px solid #2563eb;
+  color: #04af40;
+  border: 1px solid #04af40;
 }
 
 .nutrition-list__button--danger {
@@ -84,9 +84,115 @@
 }
 
 .nutrition-list__macros {
-  margin: 0 0 4px;
-  font-size: 12px;
+  margin: 4px 0 6px;
+  font-size: 11px;
   color: #4b5563;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.nutrition-list__macros-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.nutrition-list__macro-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  flex: 1 1 0;
+  justify-content: center;
+}
+
+.nutrition-list__macro-chip-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.nutrition-list__macro-chip-value {
+  min-width: 20px;
+}
+
+.nutrition-list__macros-total {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.nutrition-list__macros-total-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+}
+
+.nutrition-list__macros-total-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.nutrition-list__macro-chip--proteinas {
+  background-color: rgba(239, 68, 68, 0.06);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #b91c1c;
+}
+
+.nutrition-list__macro-chip--proteinas .nutrition-list__macro-chip-icon {
+  background-color: #ef4444;
+}
+
+.nutrition-list__macro-chip--hidratos {
+  background-color: rgba(249, 115, 22, 0.06);
+  border-color: rgba(249, 115, 22, 0.4);
+  color: #c2410c;
+}
+
+.nutrition-list__macro-chip--hidratos .nutrition-list__macro-chip-icon {
+  background-color: #f97316;
+}
+
+.nutrition-list__macro-chip--grasas {
+  background-color: rgba(146, 64, 14, 0.06);
+  border-color: rgba(146, 64, 14, 0.45);
+  color: #92400e;
+}
+
+.nutrition-list__macro-chip--grasas .nutrition-list__macro-chip-icon {
+  background-color: #92400e;
+}
+
+.nutrition-list__macro-chip--verduras {
+  background-color: rgba(34, 197, 94, 0.06);
+  border-color: rgba(34, 197, 94, 0.45);
+  color: #15803d;
+}
+
+.nutrition-list__macro-chip--verduras .nutrition-list__macro-chip-icon {
+  background-color: #22c55e;
 }
 
 .nutrition-list__macros-edit {
@@ -136,4 +242,20 @@
 
 .nutrition-list__textarea {
   resize: vertical;
+}
+
+@media (max-width: 520px) {
+  .nutrition-list__macros {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nutrition-list__macros-chips {
+    justify-content: space-between;
+  }
+
+  .nutrition-list__macros-total {
+    align-self: flex-end;
+    margin-top: 4px;
+  }
 }
