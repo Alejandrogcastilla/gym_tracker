@@ -1,5 +1,6 @@
 import { ResponsivePie } from '@nivo/pie';
 import type { TodayNutritionSummary, TodayNutritionEntrySummary } from '@types/nutrition';
+import './TodayNutritionDonut.css';
 
 interface TodayNutritionDonutProps {
   summary: TodayNutritionSummary | null;
@@ -9,6 +10,15 @@ interface TodayNutritionDonutProps {
 }
 
 const SEGMENT_COLORS = ['#6366f1', '#0ea5e9', '#22c55e', '#f97316', '#facc15', '#fb7185'];
+
+const SEGMENT_COLOR_CLASSNAMES = [
+  'today-nutrition__value--segment-0',
+  'today-nutrition__value--segment-1',
+  'today-nutrition__value--segment-2',
+  'today-nutrition__value--segment-3',
+  'today-nutrition__value--segment-4',
+  'today-nutrition__value--segment-5',
+];
 
 const MACRO_COLORS: Record<string, string> = {
   proteinas: '#6366f1', // índigo
@@ -24,7 +34,7 @@ export function TodayNutritionDonut({ summary, entries, loading, error }: TodayN
   }
 
   if (error) {
-    return <p style={{ color: '#b91c1c' }}>{error}</p>;
+    return <p className="today-nutrition__error">{error}</p>;
   }
 
   const total = summary?.totalCalories ?? 0;
@@ -95,30 +105,11 @@ export function TodayNutritionDonut({ summary, entries, loading, error }: TodayN
 
   return (
     <>
-      <section
-        style={{
-          padding: 16,
-          borderRadius: 8,
-          border: '1px solid #e5e7eb',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12,
-          width: '100%',
-          boxSizing: 'border-box',
-        }}
-      >
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <h2 style={{ fontSize: 18 }}>Nutrición de hoy</h2>
-          <span style={{ fontSize: 14, color: '#4b5563' }}>{total} kcal</span>
+      <section className="today-nutrition">
+        <header className="today-nutrition__header">
+          <h2 className="today-nutrition__title">Nutrición de hoy</h2>
         </header>
-        <div
-          style={{
-            height: 260,
-            width: '100%',
-            maxWidth: 320,
-            margin: '0 auto',
-          }}
-        >
+        <div className="today-nutrition__chart">
           <ResponsivePie
             data={data}
             margin={{ top: 20, right: 40, bottom: 40, left: 40 }}
@@ -132,109 +123,77 @@ export function TodayNutritionDonut({ summary, entries, loading, error }: TodayN
             enableArcLinkLabels={false}
             arcLabelsSkipAngle={hasData ? 10 : 360}
             arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
+            layers={[
+              'arcs',
+              'arcLabels',
+              (layerProps) => (
+                <text
+                  key="center-label"
+                  x={layerProps.centerX}
+                  y={layerProps.centerY}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fontSize={18}
+                  fontWeight={600}
+                  fill="#111827"
+                >
+                  {`${total} kcal`}
+                </text>
+              ),
+            ]}
           />
         </div>
         {!hasData && (
-          <div style={{ textAlign: 'center', paddingTop: 8, color: '#6b7280' }}>
+          <div className="today-nutrition__empty">
             <p>0 kcal hoy</p>
-            <p style={{ fontSize: 12 }}>Registra tus comidas para ver el desglose.</p>
+            <p className="today-nutrition__empty-text">Registra tus comidas para ver el desglose.</p>
           </div>
         )}
       </section>
 
-      {hasData && (
-        <section
-          style={{
-            marginTop: 16,
-            padding: 16,
-            borderRadius: 8,
-            border: '1px solid #e5e7eb',
-            width: '100%',
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 10,
-          }}
-        >
-          <h3 style={{ fontSize: 16, marginBottom: 4 }}>Detalle por grupo</h3>
-          {macroConfigs.map((macro) => {
-            const segments = entries.map((entry, index) => ({
-              index,
-              value: macro.getValue(entry),
-            }));
+      <section className="today-nutrition-macros">
+        <h3 className="today-nutrition-macros__title">Macros</h3>
+        {macroConfigs.map((macro) => {
+          const segments = entries.map((entry, index) => ({
+            index,
+            value: macro.getValue(entry),
+          }));
 
-            const hasAnySegment = segments.some((seg) => seg.value > 0);
+          const hasAnySegment = segments.some((seg) => seg.value > 0);
 
-            return (
-              <div key={macro.key} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                  <span
-                    style={{
-                      color: (MACRO_COLORS as any)[macro.key] ?? '#111827',
-                      fontWeight: 600,
-                    }}
-                  >
-                    {macro.label}
-                  </span>
-                  <span style={{ color: '#4b5563' }}>{macro.total} kcal</span>
-                </div>
-                <div
-                  style={{
-                    height: 10,
-                    borderRadius: 999,
-                    backgroundColor: '#e5e7eb',
-                    overflow: 'hidden',
-                  }}
+          return (
+            <div key={macro.key} className="today-nutrition-macros__item">
+              <div className="today-nutrition-macros__item-header">
+                <span
+                  className={
+                    `today-nutrition-macros__label today-nutrition-macros__label--${macro.key}`
+                  }
                 >
-                  <div
-                    style={{
-                      display: 'flex',
-                      width: `${(macro.total / maxBarValue) * 100}%`,
-                      height: '100%',
-                      transition: 'width 0.25s ease-out',
-                    }}
-                  >
-                    {segments.map((segment) => {
-                      if (segment.value <= 0) {
-                        return null;
-                      }
-
-                      const color = SEGMENT_COLORS[segment.index % SEGMENT_COLORS.length];
+                  {macro.label}
+                </span>
+                <span className="today-nutrition-macros__total">{macro.total} kcal</span>
+              </div>
+              <div className="today-nutrition-macros__values">
+                [
+                {hasAnySegment
+                  ? segments.map((segment, index) => {
+                      const value = segment.value;
+                      const className =
+                        SEGMENT_COLOR_CLASSNAMES[segment.index % SEGMENT_COLOR_CLASSNAMES.length];
 
                       return (
-                        <div
-                          key={segment.index}
-                          style={{
-                            flexGrow: segment.value,
-                            backgroundColor: color,
-                          }}
-                        />
+                        <span key={segment.index} className={className}>
+                          {` ${value} kcal${index < segments.length - 1 ? ' |' : ''}`}
+                        </span>
                       );
-                    })}
-                  </div>
-                </div>
-
-                <div style={{ fontSize: 11, color: '#6b7280' }}>
-                  [
-                  {hasAnySegment
-                    ? segments.map((segment, index) => {
-                        const value = segment.value;
-                        const color = SEGMENT_COLORS[segment.index % SEGMENT_COLORS.length];
-
-                        return (
-                          <span key={segment.index} style={{ color }}>
-                            {` ${value} kcal${index < segments.length - 1 ? ' |' : ''}`}
-                          </span>
-                        );
-                      })
-                    : ' 0 kcal'}
-                  ]
-                </div>
+                    })
+                  : ' 0 kcal'}
+                ]
               </div>
-            );
-          })}
-        </section>
-      )}
+            </div>
+          );
+        })}
+      </section>
     </>
   );
 }

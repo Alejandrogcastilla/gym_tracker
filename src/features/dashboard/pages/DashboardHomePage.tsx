@@ -15,32 +15,31 @@ export function DashboardHomePage() {
 
   return (
     <main className="dashboard-page">
+      <nav
+        className="app-top-nav"
+        aria-label="Navegación de inicio de nutrición"
+      >
+        <button
+          type="button"
+          onClick={() => setNutritionTab('overview')}
+          className={`app-top-nav__item${
+            nutritionTab === 'overview' ? ' app-top-nav__item--active' : ''
+          }`}
+        >
+          Resumen
+        </button>
+        <button
+          type="button"
+          onClick={() => setNutritionTab('today')}
+          className={`app-top-nav__item${
+            nutritionTab === 'today' ? ' app-top-nav__item--active' : ''
+          }`}
+        >
+          Registro de hoy
+        </button>
+      </nav>
 
       <section className="dashboard-container">
-        <nav
-          className="dashboard-top-nav"
-          aria-label="Navegación de inicio de nutrición"
-        >
-          <button
-            type="button"
-            onClick={() => setNutritionTab('overview')}
-            className={`dashboard-top-nav__tab${
-              nutritionTab === 'overview' ? ' dashboard-top-nav__tab--active' : ''
-            }`}
-          >
-            Resumen
-          </button>
-          <button
-            type="button"
-            onClick={() => setNutritionTab('today')}
-            className={`dashboard-top-nav__tab${
-              nutritionTab === 'today' ? ' dashboard-top-nav__tab--active' : ''
-            }`}
-          >
-            Registro de hoy
-          </button>
-        </nav>
-
         <header className="dashboard-header">
           {nutritionTab === 'overview' && (
             <p className="dashboard-header-text">Resumen de tu día de hoy.</p>
@@ -77,7 +76,12 @@ export function DashboardHomePage() {
       </section>
 
       {showAddNutritionModal && (
-
+        <div
+          className="dashboard-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Añadir registro de nutrición"
+        >
           <div className="dashboard-modal">
             <button
               type="button"

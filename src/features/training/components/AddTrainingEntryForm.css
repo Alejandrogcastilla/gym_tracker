@@ -1,20 +1,30 @@
 .training-form {
-  margin-top: 24px;
+  margin: 24px auto 0;
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
   max-width: 480px;
+}
+
+.training-form form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .training-form__title {
   font-size: 18px;
   margin-bottom: 12px;
+  text-align: center;
 }
 
 .training-form__row {
   display: flex;
+  flex-direction: column;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .training-form__field {
@@ -24,25 +34,39 @@
 .training-form__label {
   display: block;
   margin-bottom: 4px;
+  font-size: 13px;
+  color: #4b5563;
 }
 
 .training-form__input,
 .training-form__textarea {
   width: 100%;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 8px 12px;
+  border-radius: 999px;
   border: 1px solid #d1d5db;
   font: inherit;
+  background-color: #f9fafb;
+  box-sizing: border-box;
 }
 
 .training-form__button {
+  margin-top: 4px;
   padding: 8px 16px;
-  border-radius: 4px;
+  border-radius: 999px;
   border: none;
   background-color: #111827;
   color: #ffffff;
   font-size: 14px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  align-self: center;
+}
+
+.training-form__button:not(:disabled):hover {
+  background-color: #0f172a;
 }
 
 .training-form__button:disabled {
@@ -58,4 +82,70 @@
 .training-form__success {
   margin-top: 8px;
   color: #15803d;
+}
+
+.training-list {
+  margin-top: 20px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+}
+
+.training-list__title {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.training-list__status {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.training-list__status--error {
+  color: #b91c1c;
+}
+
+.training-list__empty {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.training-list__items {
+  list-style: none;
+  margin: 0;
+  margin-top: 4px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.training-list__item {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.training-list__item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.training-list__type {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.training-list__time {
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.training-list__date {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
 }

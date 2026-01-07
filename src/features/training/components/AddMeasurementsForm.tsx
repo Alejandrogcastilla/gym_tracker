@@ -327,6 +327,9 @@ export function AddMeasurementsForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  type InfoField = 'cintura' | 'peso' | 'cadera' | 'pecho' | 'brazo';
+  const [infoField, setInfoField] = useState<InfoField | null>(null);
+
   if (!user) {
     return null;
   }
@@ -403,9 +406,19 @@ export function AddMeasurementsForm() {
         <form onSubmit={handleSubmit}>
           <div className="measures-form__grid">
             <div className="measures-form__field">
-              <label className="measures-form__label" htmlFor="cintura">
-                Cintura (cm)
-              </label>
+              <div className="measures-form__field-header">
+                <label className="measures-form__label" htmlFor="cintura">
+                  Cintura (cm)
+                </label>
+                <button
+                  type="button"
+                  className="measures-form__info-button"
+                  onClick={() => setInfoField('cintura')}
+                  aria-label="Información sobre cómo medir la cintura"
+                >
+                  i
+                </button>
+              </div>
               <input
                 id="cintura"
                 className="measures-form__input"
@@ -418,9 +431,19 @@ export function AddMeasurementsForm() {
             </div>
 
             <div className="measures-form__field">
-              <label className="measures-form__label" htmlFor="peso">
-                Peso corporal (kg)
-              </label>
+              <div className="measures-form__field-header">
+                <label className="measures-form__label" htmlFor="peso">
+                  Peso corporal (kg)
+                </label>
+                <button
+                  type="button"
+                  className="measures-form__info-button"
+                  onClick={() => setInfoField('peso')}
+                  aria-label="Información sobre cómo usar el peso corporal"
+                >
+                  i
+                </button>
+              </div>
               <input
                 id="peso"
                 className="measures-form__input"
@@ -433,9 +456,19 @@ export function AddMeasurementsForm() {
             </div>
 
             <div className="measures-form__field">
-              <label className="measures-form__label" htmlFor="cadera">
-                Cadera (cm)
-              </label>
+              <div className="measures-form__field-header">
+                <label className="measures-form__label" htmlFor="cadera">
+                  Cadera (cm)
+                </label>
+                <button
+                  type="button"
+                  className="measures-form__info-button"
+                  onClick={() => setInfoField('cadera')}
+                  aria-label="Información sobre cómo medir la cadera"
+                >
+                  i
+                </button>
+              </div>
               <input
                 id="cadera"
                 className="measures-form__input"
@@ -448,9 +481,19 @@ export function AddMeasurementsForm() {
             </div>
 
             <div className="measures-form__field">
-              <label className="measures-form__label" htmlFor="pecho">
-                Pecho (cm)
-              </label>
+              <div className="measures-form__field-header">
+                <label className="measures-form__label" htmlFor="pecho">
+                  Pecho (cm)
+                </label>
+                <button
+                  type="button"
+                  className="measures-form__info-button"
+                  onClick={() => setInfoField('pecho')}
+                  aria-label="Información sobre cómo medir el pecho"
+                >
+                  i
+                </button>
+              </div>
               <input
                 id="pecho"
                 className="measures-form__input"
@@ -463,9 +506,19 @@ export function AddMeasurementsForm() {
             </div>
 
             <div className="measures-form__field">
-              <label className="measures-form__label" htmlFor="brazo">
-                Brazo relajado (cm)
-              </label>
+              <div className="measures-form__field-header">
+                <label className="measures-form__label" htmlFor="brazo">
+                  Brazo relajado (cm)
+                </label>
+                <button
+                  type="button"
+                  className="measures-form__info-button"
+                  onClick={() => setInfoField('brazo')}
+                  aria-label="Información sobre cómo medir el brazo relajado"
+                >
+                  i
+                </button>
+              </div>
               <input
                 id="brazo"
                 className="measures-form__input"
@@ -489,100 +542,122 @@ export function AddMeasurementsForm() {
         <MeasurementsList />
       </div>
 
-      <aside className="measures-info">
-        <h3 className="measures-info__title">Cómo interpretar estas medidas</h3>
+      {infoField && (
+        <div className="measures-info-modal-overlay" role="dialog" aria-modal="true">
+          <div className="measures-info-modal">
+            <button
+              type="button"
+              className="measures-info-modal__close"
+              aria-label="Cerrar información"
+              onClick={() => setInfoField(null)}
+            >
+              ×
+            </button>
 
-        <div className="measures-info__block measures-info__block--primary">
-          <h4 className="measures-info__heading">🥇 1) Cintura (muy recomendable)</h4>
-          <p className="measures-info__text">
-            Es la medida más importante después del peso. Es uno de los mejores proxys de grasa corporal sin usar
-            máquinas tipo DXA y, además, correlaciona muy bien con salud metabólica.
-          </p>
-          <p className="measures-info__subtitle">Por qué es clave</p>
-          <ul className="measures-info__list">
-            <li>Mejor proxy de grasa corporal sin DXA.</li>
-            <li>Detecta recomposición aunque el peso no cambie.</li>
-            <li>Correlaciona con salud metabólica.</li>
-          </ul>
-          <p className="measures-info__subtitle">Cómo medirla</p>
-          <ul className="measures-info__list">
-            <li>A la altura del ombligo.</li>
-            <li>Relajado, sin meter barriga.</li>
-            <li>Siempre en el mismo punto y con condiciones similares.</li>
-          </ul>
-          <p className="measures-info__subtitle">Frecuencia recomendada</p>
-          <p className="measures-info__text">1 vez por semana es más que suficiente.</p>
-          <p className="measures-info__subtitle">Interpretación rápida</p>
-          <ul className="measures-info__list">
-            <li>⬇️ Cintura baja + peso estable → recomposición (pierdes grasa y ganas músculo).</li>
-            <li>⬆️ Cintura sube rápido → estás ganando grasa.</li>
-            <li>Peso sube + cintura estable → volumen más limpio y controlado.</li>
-          </ul>
-        </div>
+            {infoField === 'cintura' && (
+              <>
+                <h3 className="measures-info-modal__title">🥇 Cintura (muy recomendable)</h3>
+                <p className="measures-info-modal__text">
+                  Es la medida más importante después del peso. Es uno de los mejores proxys de grasa corporal sin usar
+                  máquinas tipo DXA y, además, correlaciona muy bien con salud metabólica.
+                </p>
+                <h4 className="measures-info-modal__subtitle">Por qué es clave</h4>
+                <ul className="measures-info-modal__list">
+                  <li>Mejor proxy de grasa corporal sin DXA.</li>
+                  <li>Detecta recomposición aunque el peso no cambie.</li>
+                  <li>Correlaciona con salud metabólica.</li>
+                </ul>
+                <h4 className="measures-info-modal__subtitle">Cómo medirla</h4>
+                <ul className="measures-info-modal__list">
+                  <li>A la altura del ombligo.</li>
+                  <li>Relajado, sin meter barriga.</li>
+                  <li>Siempre en el mismo punto y con condiciones similares.</li>
+                </ul>
+                <h4 className="measures-info-modal__subtitle">Frecuencia recomendada</h4>
+                <p className="measures-info-modal__text">1 vez por semana es más que suficiente.</p>
+                <h4 className="measures-info-modal__subtitle">Interpretación rápida</h4>
+                <ul className="measures-info-modal__list">
+                  <li>⬇️ Cintura baja + peso estable → recomposición (pierdes grasa y ganas músculo).</li>
+                  <li>⬆️ Cintura sube rápido → estás ganando grasa.</li>
+                  <li>Peso sube + cintura estable → volumen más limpio y controlado.</li>
+                </ul>
+              </>
+            )}
 
-        <div className="measures-info__block">
-          <h4 className="measures-info__heading">🥈 2) Peso corporal</h4>
-          <p className="measures-info__text">
-            No es una medida de perímetro, pero va siempre asociada. Es el dato que mejor refleja el balance
-            energético real a medio plazo.
-          </p>
-          <p className="measures-info__subtitle">Por qué importa</p>
-          <ul className="measures-info__list">
-            <li>Indica el balance energético real.</li>
-            <li>Es necesario para ratios (% de peso por semana, g/kg de proteína, etc.).</li>
-          </ul>
-          <p className="measures-info__subtitle">Cómo usarlo bien</p>
-          <ul className="measures-info__list">
-            <li>Usa medias móviles de 7 días (MA7).</li>
-            <li>No valores un día aislado: observa la tendencia.</li>
-          </ul>
-          <p className="measures-info__subtitle">Frecuencia recomendada</p>
-          <p className="measures-info__text">Ideal: diario. Mínimo útil: 4 veces por semana.</p>
-        </div>
+            {infoField === 'peso' && (
+              <>
+                <h3 className="measures-info-modal__title">🥈 Peso corporal</h3>
+                <p className="measures-info-modal__text">
+                  No es una medida de perímetro, pero va siempre asociada. Es el dato que mejor refleja el balance
+                  energético real a medio plazo.
+                </p>
+                <h4 className="measures-info-modal__subtitle">Por qué importa</h4>
+                <ul className="measures-info-modal__list">
+                  <li>Indica el balance energético real.</li>
+                  <li>Es necesario para ratios (% de peso por semana, g/kg de proteína, etc.).</li>
+                </ul>
+                <h4 className="measures-info-modal__subtitle">Cómo usarlo bien</h4>
+                <ul className="measures-info-modal__list">
+                  <li>Usa medias móviles de 7 días (MA7).</li>
+                  <li>No valores un día aislado: observa la tendencia.</li>
+                </ul>
+                <h4 className="measures-info-modal__subtitle">Frecuencia recomendada</h4>
+                <p className="measures-info-modal__text">Ideal: diario. Mínimo útil: 4 veces por semana.</p>
+              </>
+            )}
 
-        <div className="measures-info__block">
-          <h4 className="measures-info__heading">🥉 3) Cadera (opcional pero útil)</h4>
-          <p className="measures-info__text">
-            Especialmente interesante si tiendes a acumular grasa en la zona de cadera y glúteos.
-          </p>
-          <p className="measures-info__subtitle">Por qué puede ayudarte</p>
-          <ul className="measures-info__list">
-            <li>Junto con la cintura permite calcular el ratio cintura/cadera.</li>
-            <li>Ayuda a detectar redistribución de grasa.</li>
-          </ul>
-          <p className="measures-info__subtitle">Frecuencia recomendada</p>
-          <p className="measures-info__text">1 vez cada 2–4 semanas suele ser suficiente.</p>
-        </div>
+            {infoField === 'cadera' && (
+              <>
+                <h3 className="measures-info-modal__title">🥉 Cadera (opcional pero útil)</h3>
+                <p className="measures-info-modal__text">
+                  Especialmente interesante si tiendes a acumular grasa en la zona de cadera y glúteos.
+                </p>
+                <h4 className="measures-info-modal__subtitle">Por qué puede ayudarte</h4>
+                <ul className="measures-info-modal__list">
+                  <li>Junto con la cintura permite calcular el ratio cintura/cadera.</li>
+                  <li>Ayuda a detectar redistribución de grasa.</li>
+                </ul>
+                <h4 className="measures-info-modal__subtitle">Frecuencia recomendada</h4>
+                <p className="measures-info-modal__text">1 vez cada 2–4 semanas suele ser suficiente.</p>
+              </>
+            )}
 
-        <div className="measures-info__block">
-          <h4 className="measures-info__heading">🟡 4) Pecho</h4>
-          <p className="measures-info__text">
-            Muy útil en volumen o recomposición si entrenas fuerza, porque suele reflejar bien la ganancia muscular
-            real en el torso.
-          </p>
-          <p className="measures-info__subtitle">Por qué es interesante</p>
-          <ul className="measures-info__list">
-            <li>Refleja ganancia muscular real cuando se entrena fuerza de manera consistente.</li>
-            <li>Es muy motivacional: suele subir cuando haces las cosas bien.</li>
-          </ul>
-          <p className="measures-info__subtitle">Frecuencia recomendada</p>
-          <p className="measures-info__text">1 vez cada 2–4 semanas.</p>
-        </div>
+            {infoField === 'pecho' && (
+              <>
+                <h3 className="measures-info-modal__title">🟡 Pecho</h3>
+                <p className="measures-info-modal__text">
+                  Muy útil en volumen o recomposición si entrenas fuerza, porque suele reflejar bien la ganancia
+                  muscular real en el torso.
+                </p>
+                <h4 className="measures-info-modal__subtitle">Por qué es interesante</h4>
+                <ul className="measures-info-modal__list">
+                  <li>Refleja ganancia muscular real cuando se entrena fuerza de manera consistente.</li>
+                  <li>Es muy motivacional: suele subir cuando haces las cosas bien.</li>
+                </ul>
+                <h4 className="measures-info-modal__subtitle">Frecuencia recomendada</h4>
+                <p className="measures-info-modal__text">1 vez cada 2–4 semanas.</p>
+              </>
+            )}
 
-        <div className="measures-info__block">
-          <h4 className="measures-info__heading">🟡 5) Brazo (relajado)</h4>
-          <p className="measures-info__text">
-            Medida sencilla y muy motivacional si te interesa la hipertrofia. Mídelo siempre relajado, sin contraer.
-          </p>
-          <p className="measures-info__subtitle">Por qué merece la pena</p>
-          <ul className="measures-info__list">
-            <li>Indica hipertrofia periférica (brazos, hombros, etc.).</li>
-            <li>Es poco ruidosa si se mide siempre igual.</li>
-          </ul>
-          <p className="measures-info__subtitle">Frecuencia recomendada</p>
-          <p className="measures-info__text">1 vez cada 2–4 semanas.</p>
+            {infoField === 'brazo' && (
+              <>
+                <h3 className="measures-info-modal__title">🟡 Brazo (relajado)</h3>
+                <p className="measures-info-modal__text">
+                  Medida sencilla y muy motivacional si te interesa la hipertrofia. Mídelo siempre relajado, sin
+                  contraer.
+                </p>
+                <h4 className="measures-info-modal__subtitle">Por qué merece la pena</h4>
+                <ul className="measures-info-modal__list">
+                  <li>Indica hipertrofia periférica (brazos, hombros, etc.).</li>
+                  <li>Es poco ruidosa si se mide siempre igual.</li>
+                </ul>
+                <h4 className="measures-info-modal__subtitle">Frecuencia recomendada</h4>
+                <p className="measures-info-modal__text">1 vez cada 2–4 semanas.</p>
+              </>
+            )}
+          </div>
         </div>
-      </aside>
+      )}
     </section>
   );
 }

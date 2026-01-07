@@ -2,14 +2,18 @@
   margin-top: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .progress-overview__card {
-  padding: 16px;
-  border-radius: 8px;
+  padding: 16px 16px 20px;
+  border-radius: 12px;
   border: 1px solid #e5e7eb;
   background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
 }
 
 .progress-overview__title {
@@ -27,7 +31,7 @@
 }
 
 .progress-overview__chart-wrapper {
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 .progress-overview__chart {
@@ -59,15 +63,38 @@
 }
 
 .progress-overview__trends {
-  padding: 16px;
-  border-radius: 8px;
+  padding: 16px 16px 20px;
+  border-radius: 12px;
   border: 1px solid #e5e7eb;
   background-color: #f9fafb;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
 }
 
 .progress-overview__trends-title {
   font-size: 16px;
   margin-bottom: 8px;
+}
+
+.progress-overview__workout-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.progress-overview__workout-summary > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress-overview__workout-label {
+  color: #6b7280;
+}
+
+.progress-overview__workout-value {
+  font-weight: 600;
 }
 
 .progress-overview__trends-grid {
@@ -106,12 +133,7 @@
 }
 
 @media (min-width: 900px) {
-  .progress-overview {
-    flex-direction: row;
-  }
-
-  .progress-overview__card,
-  .progress-overview__trends {
-    flex: 1;
+  .progress-overview__trends-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }

@@ -4,9 +4,11 @@ import { firebaseDb } from '@/services/firebase/firebaseClient';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useUserProfile } from '@/features/users/hooks/useUserProfile';
 import type { ProgressEntry } from '@/types/progress';
+import type { TrainingEntry } from '@/types/training';
 import './ProgressOverview.css';
 
 const progressCollection = collection(firebaseDb, 'progreso');
+const trainingsCollection = collection(firebaseDb, 'entrenamientos');
 
 interface WeightPoint {
   fecha: string;
@@ -20,6 +22,9 @@ export function ProgressOverview() {
   const [entries, setEntries] = useState<ProgressEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [trainingStats, setTrainingStats] = useState<{ sessions: number; minutes: number } | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!user) return;
@@ -48,6 +53,43 @@ export function ProgressOverview() {
     };
 
     load();
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const loadTrainings = async () => {
+      try {
+        const q = query(
+          trainingsCollection,
+          where('id_usuario', '==', user.uid),
+          orderBy('fecha', 'desc'),
+        );
+        const snapshot = await getDocs(q);
+        const docs: TrainingEntry[] = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data() as Omit<TrainingEntry, 'id'>;
+          return { id: docSnap.id, ...data };
+        });
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(today.getDate() - 6);
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        const sevenDaysAgoKey = `${sevenDaysAgo.getFullYear()}${pad(sevenDaysAgo.getMonth() + 1)}${pad(sevenDaysAgo.getDate())}`;
+
+        const lastWeekEntries = docs.filter((entry) => entry.fecha >= sevenDaysAgoKey);
+        const sessions = lastWeekEntries.length;
+        const minutes = lastWeekEntries.reduce((acc, entry) => acc + (entry.tiempo ?? 0), 0);
+
+        setTrainingStats({ sessions, minutes });
+      } catch (err) {
+        console.error(err);
+        setTrainingStats(null);
+      }
+    };
+
+    loadTrainings();
   }, [user]);
 
   const weightPoints: WeightPoint[] = useMemo(
@@ -135,7 +177,17 @@ export function ProgressOverview() {
   }, [weightPoints, weightGoal]);
 
   const trends = useMemo(() => {
-    const recentEntries = entries.slice(-10);
+    // Ventana de últimos 7 días (incluyendo hoy)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6);
+
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const sevenDaysAgoKey = `${sevenDaysAgo.getFullYear()}${pad(sevenDaysAgo.getMonth() + 1)}${pad(sevenDaysAgo.getDate())}`;
+
+    // Solo entradas de los últimos 7 días (formato fecha yyyymmdd)
+    const recentEntries = entries.filter((e) => e.fecha >= sevenDaysAgoKey);
 
     const metricLabels: Record<keyof Omit<ProgressEntry, 'id' | 'id_usuario' | 'fecha'>, string> = {
       peso: 'Peso',
@@ -165,12 +217,13 @@ export function ProgressOverview() {
         [K in typeof key]: number;
       })[];
 
+      // Necesitamos al menos 2 medidas en los últimos 7 días
       if (series.length < 2) {
         result.push({
           key,
           label: metricLabels[key],
           arrow: '→',
-          description: 'Sin datos suficientes',
+          description: 'Sin datos suficientes (últimos 7 días)',
         });
         return;
       }
@@ -187,21 +240,21 @@ export function ProgressOverview() {
           key,
           label: metricLabels[key],
           arrow: '↑',
-          description: `Ascendente (+${diff.toFixed(1)} ${unit})`,
+          description: `Creciente (+${diff.toFixed(1)} ${unit})`,
         });
       } else if (diff < -threshold) {
         result.push({
           key,
           label: metricLabels[key],
           arrow: '↓',
-          description: `Descendente (${diff.toFixed(1)} ${unit})`,
+          description: `Decreciente (${diff.toFixed(1)} ${unit})`,
         });
       } else {
         result.push({
           key,
           label: metricLabels[key],
           arrow: '→',
-          description: 'Estable',
+          description: 'Neutro (últimos 7 días)',
         });
       }
     });
@@ -344,6 +397,18 @@ export function ProgressOverview() {
 
       <div className="progress-overview__trends">
         <h3 className="progress-overview__trends-title">Tendencia de medidas</h3>
+        {trainingStats && (
+          <div className="progress-overview__workout-summary">
+            <div>
+              <span className="progress-overview__workout-label">Entrenamientos (últimos 7 días)</span>
+              <span className="progress-overview__workout-value">{trainingStats.sessions}</span>
+            </div>
+            <div>
+              <span className="progress-overview__workout-label">Minutos entrenados (últimos 7 días)</span>
+              <span className="progress-overview__workout-value">{trainingStats.minutes}</span>
+            </div>
+          </div>
+        )}
         <div className="progress-overview__trends-grid">
           {trends.map((item) => (
             <div key={item.key} className="progress-overview__trend-card">

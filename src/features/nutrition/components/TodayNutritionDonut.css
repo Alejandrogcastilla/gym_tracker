@@ -1,0 +1,123 @@
+.today-nutrition {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.today-nutrition__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.today-nutrition__title {
+  font-size: 18px;
+}
+
+.today-nutrition__chart {
+  height: 260px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.today-nutrition__empty {
+  text-align: center;
+  padding-top: 8px;
+  color: #6b7280;
+}
+
+.today-nutrition__empty-text {
+  font-size: 12px;
+}
+
+.today-nutrition__error {
+  color: #b91c1c;
+}
+
+.today-nutrition-macros {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.today-nutrition-macros__title {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.today-nutrition-macros__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.today-nutrition-macros__item-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.today-nutrition-macros__label {
+  font-weight: 600;
+}
+
+.today-nutrition-macros__total {
+  color: #4b5563;
+}
+
+.today-nutrition-macros__values {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.today-nutrition-macros__label--proteinas {
+  color: #6366f1;
+}
+
+.today-nutrition-macros__label--hidratos {
+  color: #f97316;
+}
+
+.today-nutrition-macros__label--grasas {
+  color: #fb7185;
+}
+
+.today-nutrition-macros__label--verduras {
+  color: #22c55e;
+}
+
+.today-nutrition__value--segment-0 {
+  color: #6366f1;
+}
+
+.today-nutrition__value--segment-1 {
+  color: #0ea5e9;
+}
+
+.today-nutrition__value--segment-2 {
+  color: #22c55e;
+}
+
+.today-nutrition__value--segment-3 {
+  color: #f97316;
+}
+
+.today-nutrition__value--segment-4 {
+  color: #facc15;
+}
+
+.today-nutrition__value--segment-5 {
+  color: #fb7185;
+}
