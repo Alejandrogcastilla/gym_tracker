@@ -235,13 +235,13 @@ export function TodayNutritionDonut({ summary, entries, loading, error }: TodayN
               </div>
               <div className="today-nutrition-macros__bar-wrapper">
                 <div className="today-nutrition-macros__bar">
-                  {macro.total > 0 &&
+                  {hasData && macro.total > 0 &&
                     (() => {
                       const activeSegments = segments.filter((segment) => segment.value > 0);
                       let offsetPercent = 0;
 
                       return activeSegments.map((segment) => {
-                        const widthPercent = (segment.value / macro.total) * 100;
+                        const widthPercent = (segment.value / total) * 100;
                         const centerPercent = offsetPercent + widthPercent / 2;
                         offsetPercent += widthPercent;
 

@@ -1,6 +1,6 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { addDoc, collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { addDoc, collection } from 'firebase/firestore';
 import { firebaseDb } from '@services/firebase/firebaseClient';
 import type { TrainingEntry } from '@types/training';
 import './AddTrainingEntryForm.css';
@@ -16,78 +16,11 @@ function formatNowAsYYYYMMDDHH(): string {
   return `${year}${month}${day}${hour}`;
 }
 
-function formatDateTime(raw: string): string {
-  if (raw.length !== 10) return raw;
-  const year = raw.slice(0, 4);
-  const month = raw.slice(4, 6);
-  const day = raw.slice(6, 8);
-  const hour = raw.slice(8, 10);
-  return `${day}/${month}/${year} · ${hour}:00`;
-}
+type AddTrainingEntryFormProps = {
+  onOpenHistory?: () => void;
+};
 
-function RecentTrainingsList({ userId }: { userId: string }) {
-  const [entries, setEntries] = useState<TrainingEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const q = query(
-          trainingsCollection,
-          where('id_usuario', '==', userId),
-          orderBy('fecha', 'desc'),
-        );
-        const snapshot = await getDocs(q);
-        const docs: TrainingEntry[] = snapshot.docs.map((docSnap) => {
-          const data = docSnap.data() as Omit<TrainingEntry, 'id'>;
-          return { id: docSnap.id, ...data };
-        });
-        setEntries(docs.slice(0, 10));
-      } catch (err) {
-        console.error(err);
-        setError('No se han podido cargar los entrenamientos recientes.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    load();
-  }, [userId]);
-
-  if (loading) {
-    return <p className="training-list__status">Cargando entrenamientos recientes...</p>;
-  }
-
-  if (error) {
-    return <p className="training-list__status training-list__status--error">{error}</p>;
-  }
-
-  if (!entries.length) {
-    return <p className="training-list__empty">Todavía no has registrado entrenamientos.</p>;
-  }
-
-  return (
-    <section className="training-list">
-      <h3 className="training-list__title">Entrenamientos recientes</h3>
-      <ul className="training-list__items">
-        {entries.map((entry) => (
-          <li key={entry.id} className="training-list__item">
-            <div className="training-list__item-header">
-              <span className="training-list__type">{entry.tipo_entrenamiento}</span>
-              <span className="training-list__time">{entry.tiempo} min</span>
-            </div>
-            <p className="training-list__date">{formatDateTime(entry.fecha)}</p>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-export function AddTrainingEntryForm() {
+export function AddTrainingEntryForm({ onOpenHistory }: AddTrainingEntryFormProps) {
   const { user } = useAuth();
   const [tipoEntrenamiento, setTipoEntrenamiento] = useState('');
   const [tiempo, setTiempo] = useState('');
@@ -143,7 +76,19 @@ export function AddTrainingEntryForm() {
 
   return (
     <section className="training-form">
-      <h2 className="training-form__title">Añadir entrenamiento</h2>
+      <div className="training-form__header">
+        <h2 className="training-form__title">Añadir entrenamiento</h2>
+        {onOpenHistory && (
+          <button
+            type="button"
+            className="training-form__history-button"
+            onClick={onOpenHistory}
+            aria-label="Ver historial de entrenamientos"
+          >
+            <span className="material-symbols-outlined">history</span>
+          </button>
+        )}
+      </div>
       <form onSubmit={handleSubmit}>
         <div className="training-form__row">
           <div className="training-form__field">
@@ -182,7 +127,6 @@ export function AddTrainingEntryForm() {
         {success ? <p className="training-form__success">{success}</p> : null}
       </form>
 
-      <RecentTrainingsList userId={user.uid} />
     </section>
   );
 }

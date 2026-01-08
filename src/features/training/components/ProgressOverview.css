@@ -42,13 +42,27 @@
   margin-top: 8px;
   display: flex;
   gap: 16px;
+  justify-content: space-between;
   font-size: 13px;
   color: #374151;
 }
 
-.progress-overview__chart-summary > div {
+.progress-overview__chart-summary-item {
   display: flex;
   flex-direction: column;
+  flex: 1;
+}
+
+.progress-overview__chart-summary-item--start {
+  text-align: left;
+}
+
+.progress-overview__chart-summary-item--center {
+  text-align: center;
+}
+
+.progress-overview__chart-summary-item--end {
+  text-align: right;
 }
 
 .progress-overview__chart-label {
@@ -58,6 +72,34 @@
 
 .progress-overview__chart-value {
   font-weight: 600;
+}
+
+.progress-overview__weight-summary {
+  margin-top: 8px;
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  line-height: 1.4;
+}
+
+.progress-overview__weight-summary--good {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.progress-overview__weight-summary--neutral {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.progress-overview__weight-summary--warn {
+  background-color: #fffbeb;
+  color: #92400e;
+}
+
+.progress-overview__weight-summary--bad {
+  background-color: #fef2f2;
+  color: #b91c1c;
 }
 
 .progress-overview__trends {
@@ -95,6 +137,41 @@
   font-weight: 600;
 }
 
+.progress-overview__activity {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+}
+
+.progress-overview__activity-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.progress-overview__activity-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.progress-overview__activity-grid > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress-overview__activity-label {
+  color: #6b7280;
+}
+
+.progress-overview__activity-value {
+  font-weight: 600;
+}
+
 .progress-overview__trends-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -106,6 +183,26 @@
   border-radius: 8px;
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
+}
+
+.progress-overview__trend-card--good {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.progress-overview__trend-card--neutral {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+}
+
+.progress-overview__trend-card--warn {
+  background-color: #fffbeb;
+  border-color: #fed7aa;
+}
+
+.progress-overview__trend-card--bad {
+  background-color: #fef2f2;
+  border-color: #fecaca;
 }
 
 .progress-overview__trend-header {

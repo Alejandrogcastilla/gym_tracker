@@ -9,6 +9,8 @@ const nutritionCollection = collection(firebaseDb, 'nutricion');
 interface TodayNutritionEntriesListProps {
   entries: TodayNutritionEntrySummary[];
   onUpdated?: () => void;
+  title?: string;
+  emptyMessage?: string;
 }
 
 async function updateEntry(id: string, partial: Record<string, unknown>) {
@@ -24,6 +26,8 @@ async function deleteEntry(id: string) {
 export const TodayNutritionEntriesList = memo(function TodayNutritionEntriesList({
   entries,
   onUpdated,
+  title,
+  emptyMessage,
 }: TodayNutritionEntriesListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<
@@ -37,6 +41,7 @@ export const TodayNutritionEntriesList = memo(function TodayNutritionEntriesList
       }
     | null
   >(null);
+  const [expandedNotesId, setExpandedNotesId] = useState<string | null>(null);
 
   const startEdit = (entry: TodayNutritionEntrySummary) => {
     setEditingId(entry.id);
@@ -104,21 +109,38 @@ export const TodayNutritionEntriesList = memo(function TodayNutritionEntriesList
     }
   };
 
+  const formatDateLabel = (raw: string | null | undefined): string => {
+    if (!raw || raw.length < 8) return '';
+
+    const year = raw.slice(0, 4);
+    const month = raw.slice(4, 6);
+    const day = raw.slice(6, 8);
+    const hour = raw.length >= 10 ? raw.slice(8, 10) : null;
+
+    if (hour) {
+      return `${day}/${month}/${year} · ${hour}h`;
+    }
+
+    return `${day}/${month}/${year}`;
+  };
+
+  const emptyText =
+    emptyMessage ?? 'Todavía no has añadido ningún registro de nutrición en los últimos 7 días.';
+
   if (!entries.length) {
     return (
       <section className="nutrition-list">
-        <h2 className="nutrition-list__title">Registros de hoy</h2>
-        <p className="nutrition-list__empty">Todavía no has añadido ningún registro de nutrición hoy.</p>
+        <p className="nutrition-list__empty">{emptyText}</p>
       </section>
     );
   }
 
   return (
     <section className="nutrition-list">
-      <h2 className="nutrition-list__title">Registros de hoy</h2>
       <ul className="nutrition-list__items">
         {entries.map((entry) => {
           const isEditing = editingId === entry.id;
+          const dateLabel = formatDateLabel(entry.fecha);
           const macros = {
             proteinas: isEditing && editValues ? editValues.proteinas : String(entry.proteinas),
             hidratos: isEditing && editValues ? editValues.hidratos : String(entry.hidratos),
@@ -128,46 +150,38 @@ export const TodayNutritionEntriesList = memo(function TodayNutritionEntriesList
           const tituloValue = isEditing && editValues ? editValues.titulo : entry.titulo ?? '';
           const notasValue = isEditing && editValues ? editValues.notas : entry.notas ?? '';
 
+          const hasNotes = Boolean((entry.notas ?? '').trim());
+          const isNotesExpanded = expandedNotesId === entry.id;
+          const fullNotes = entry.notas ?? '';
+          const firstLine = fullNotes.split('\n')[0] ?? '';
+          const previewText = firstLine.length > 80
+            ? `${firstLine.slice(0, 80).trimEnd()}…`
+            : firstLine;
+
           return (
             <li key={entry.id} className="nutrition-list__item">
               <div className="nutrition-list__item-header">
-                <div className="nutrition-list__header-right">
-                  {isEditing ? (
-                    <>
-                      <button
-                        type="button"
-                        className="nutrition-list__button"
-                        onClick={() => handleSave(entry.id)}
-                      >
-                        Guardar
-                      </button>
-                      <button
-                        type="button"
-                        className="nutrition-list__button nutrition-list__button--ghost"
-                        onClick={cancelEdit}
-                      >
-                        Cancelar
-                      </button>
-                      <button
-                        type="button"
-                        className="nutrition-list__button nutrition-list__button--danger"
-                        onClick={() => handleDelete(entry.id)}
-                      >
-                        Eliminar
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        className="nutrition-list__button"
-                        onClick={() => startEdit(entry)}
-                      >
-                        Modificar
-                      </button>
-                    </>
+                <div className="nutrition-list__header-left">
+                  {dateLabel && (
+                    <span className="nutrition-list__date">{dateLabel}</span>
                   )}
                 </div>
+                <div className="nutrition-list__header-right">
+                  {!isEditing && (
+                    <button
+                      type="button"
+                      className="nutrition-list__icon-button"
+                      onClick={() => startEdit(entry)}
+                      aria-label="Modificar registro de nutrición"
+                    >
+                      <span className="material-symbols-outlined">edit</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="nutrition-list__main-row">
+                <div className="nutrition-list__title-row">{tituloValue || 'Sin título'}</div>
+                <span className="nutrition-list__kcal">{entry.totalCalories.toFixed(0)} kcal</span>
               </div>
 
               {isEditing ? (
@@ -229,52 +243,79 @@ export const TodayNutritionEntriesList = memo(function TodayNutritionEntriesList
                       <span className="nutrition-list__macro-chip-value">{entry.verduras}</span>
                     </div>
                   </div>
-                  <span className="nutrition-list__macros-total">
-                    <span className="nutrition-list__macros-total-label">Total</span>
-                    <span className="nutrition-list__macros-total-value">
-                      {entry.totalCalories.toFixed(0)} kcal
-                    </span>
-                  </span>
                 </div>
               )}
 
-              <div className="nutrition-list__field">
-                <label className="nutrition-list__label" htmlFor={`titulo-${entry.id}`}>
-                  Título
-                </label>
-                <input
-                  id={`titulo-${entry.id}`}
-                  className="nutrition-list__input"
-                  type="text"
-                  value={tituloValue}
-                  readOnly={!isEditing}
-                  placeholder="Ej. Desayuno, Comida post-entreno..."
-                  onChange={
-                    isEditing
-                      ? (e) => handleFieldChange('titulo', e.target.value)
-                      : undefined
+              {!isEditing && hasNotes && (
+                <button
+                  type="button"
+                  className="nutrition-list__notes-toggle"
+                  onClick={() =>
+                    setExpandedNotesId((prev) => (prev === entry.id ? null : entry.id))
                   }
-                />
-              </div>
+                >
+                  <span className="nutrition-list__notes-label">Notas</span>
+                  <span className="nutrition-list__notes-preview">
+                    {isNotesExpanded ? fullNotes : previewText}
+                  </span>
+                </button>
+              )}
 
-              <div className="nutrition-list__field">
-                <label className="nutrition-list__label" htmlFor={`notas-${entry.id}`}>
-                  Notas
-                </label>
-                <textarea
-                  id={`notas-${entry.id}`}
-                  className="nutrition-list__textarea"
-                  value={notasValue}
-                  readOnly={!isEditing}
-                  rows={2}
-                  placeholder="Detalles adicionales que quieras recordar de esta comida."
-                  onChange={
-                    isEditing
-                      ? (e) => handleFieldChange('notas', e.target.value)
-                      : undefined
-                  }
-                />
-              </div>
+              {isEditing && (
+                <>
+                  <div className="nutrition-list__field">
+                    <label className="nutrition-list__label" htmlFor={`titulo-${entry.id}`}>
+                      Título
+                    </label>
+                    <input
+                      id={`titulo-${entry.id}`}
+                      className="nutrition-list__input"
+                      type="text"
+                      value={tituloValue}
+                      onChange={(e) => handleFieldChange('titulo', e.target.value)}
+                      placeholder="Ej. Desayuno, Comida post-entreno..."
+                    />
+                  </div>
+
+                  <div className="nutrition-list__field">
+                    <label className="nutrition-list__label" htmlFor={`notas-${entry.id}`}>
+                      Notas
+                    </label>
+                    <textarea
+                      id={`notas-${entry.id}`}
+                      className="nutrition-list__textarea"
+                      value={notasValue}
+                      rows={2}
+                      placeholder="Detalles adicionales que quieras recordar de esta comida."
+                      onChange={(e) => handleFieldChange('notas', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="nutrition-list__actions">
+                    <button
+                      type="button"
+                      className="nutrition-list__button"
+                      onClick={() => handleSave(entry.id)}
+                    >
+                      Guardar
+                    </button>
+                    <button
+                      type="button"
+                      className="nutrition-list__button nutrition-list__button--ghost"
+                      onClick={cancelEdit}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      className="nutrition-list__button nutrition-list__button--danger"
+                      onClick={() => handleDelete(entry.id)}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </>
+              )}
             </li>
           );
         })}

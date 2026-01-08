@@ -179,8 +179,8 @@ function MeasurementsList() {
         <ul className="measures-list__items">
           {visibleEntries.map((entry) => {
             const parts: string[] = [];
-            if (entry.cintura != null) parts.push(`Cintura: ${entry.cintura} cm`);
             if (entry.peso != null) parts.push(`Peso: ${entry.peso} kg`);
+            if (entry.cintura != null) parts.push(`Cintura: ${entry.cintura} cm`);
             if (entry.cadera != null) parts.push(`Cadera: ${entry.cadera} cm`);
             if (entry.pecho != null) parts.push(`Pecho: ${entry.pecho} cm`);
             if (entry.brazo != null) parts.push(`Brazo: ${entry.brazo} cm`);
@@ -212,29 +212,19 @@ function MeasurementsList() {
                     ) : (
                       <button
                         type="button"
-                        className="measures-list__button"
+                        className="measures-list__edit-button"
                         onClick={() => startEdit(entry)}
+                        aria-label="Editar medidas"
                       >
-                        Modificar
+                        <span className="material-symbols-outlined" aria-hidden="true">
+                          edit
+                        </span>
                       </button>
                     )}
                   </div>
                 </div>
                 {isEditing ? (
                   <div className="measures-list__edit-grid">
-                    <div className="measures-list__edit-field">
-                      <label className="measures-list__edit-label" htmlFor={`cintura-${entry.id}`}>
-                        Cintura (cm)
-                      </label>
-                      <input
-                        id={`cintura-${entry.id}`}
-                        className="measures-list__edit-input"
-                        type="number"
-                        inputMode="decimal"
-                        value={editValues?.cintura ?? ''}
-                        onChange={(e) => handleEditFieldChange('cintura', e.target.value)}
-                      />
-                    </div>
                     <div className="measures-list__edit-field">
                       <label className="measures-list__edit-label" htmlFor={`peso-${entry.id}`}>
                         Peso (kg)
@@ -246,6 +236,19 @@ function MeasurementsList() {
                         inputMode="decimal"
                         value={editValues?.peso ?? ''}
                         onChange={(e) => handleEditFieldChange('peso', e.target.value)}
+                      />
+                    </div>
+                    <div className="measures-list__edit-field">
+                      <label className="measures-list__edit-label" htmlFor={`cintura-${entry.id}`}>
+                        Cintura (cm)
+                      </label>
+                      <input
+                        id={`cintura-${entry.id}`}
+                        className="measures-list__edit-input"
+                        type="number"
+                        inputMode="decimal"
+                        value={editValues?.cintura ?? ''}
+                        onChange={(e) => handleEditFieldChange('cintura', e.target.value)}
                       />
                     </div>
                     <div className="measures-list__edit-field">
@@ -407,31 +410,6 @@ export function AddMeasurementsForm() {
           <div className="measures-form__grid">
             <div className="measures-form__field">
               <div className="measures-form__field-header">
-                <label className="measures-form__label" htmlFor="cintura">
-                  Cintura (cm)
-                </label>
-                <button
-                  type="button"
-                  className="measures-form__info-button"
-                  onClick={() => setInfoField('cintura')}
-                  aria-label="Información sobre cómo medir la cintura"
-                >
-                  i
-                </button>
-              </div>
-              <input
-                id="cintura"
-                className="measures-form__input"
-                type="number"
-                inputMode="decimal"
-                value={cintura}
-                onChange={(e) => setCintura(e.target.value)}
-                placeholder="Ej. 80"
-              />
-            </div>
-
-            <div className="measures-form__field">
-              <div className="measures-form__field-header">
                 <label className="measures-form__label" htmlFor="peso">
                   Peso corporal (kg)
                 </label>
@@ -452,6 +430,31 @@ export function AddMeasurementsForm() {
                 value={peso}
                 onChange={(e) => setPeso(e.target.value)}
                 placeholder="Ej. 72.5"
+              />
+            </div>
+
+            <div className="measures-form__field">
+              <div className="measures-form__field-header">
+                <label className="measures-form__label" htmlFor="cintura">
+                  Cintura (cm)
+                </label>
+                <button
+                  type="button"
+                  className="measures-form__info-button"
+                  onClick={() => setInfoField('cintura')}
+                  aria-label="Información sobre cómo medir la cintura"
+                >
+                  i
+                </button>
+              </div>
+              <input
+                id="cintura"
+                className="measures-form__input"
+                type="number"
+                inputMode="decimal"
+                value={cintura}
+                onChange={(e) => setCintura(e.target.value)}
+                placeholder="Ej. 80"
               />
             </div>
 
@@ -538,9 +541,9 @@ export function AddMeasurementsForm() {
           {error ? <p className="measures-form__error">{error}</p> : null}
           {success ? <p className="measures-form__success">{success}</p> : null}
         </form>
-
-        <MeasurementsList />
       </div>
+
+      <MeasurementsList />
 
       {infoField && (
         <div className="measures-info-modal-overlay" role="dialog" aria-modal="true">

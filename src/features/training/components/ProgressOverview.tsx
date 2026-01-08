@@ -15,9 +15,57 @@ interface WeightPoint {
   value: number;
 }
 
-export function ProgressOverview() {
+type ProgressRange = 'today' | '7d' | 'month';
+
+interface ProgressOverviewProps {
+  range?: ProgressRange;
+}
+
+function getRangeConfig(effectiveRange: ProgressRange) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const baseDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  const pad = (n: number) => n.toString().padStart(2, '0');
+
+  const todayKey = `${baseDay.getFullYear()}${pad(baseDay.getMonth() + 1)}${pad(baseDay.getDate())}`;
+
+  const sevenDaysAgo = new Date(baseDay);
+  sevenDaysAgo.setDate(baseDay.getDate() - 6);
+  const sevenDaysAgoKey = `${sevenDaysAgo.getFullYear()}${pad(sevenDaysAgo.getMonth() + 1)}${pad(sevenDaysAgo.getDate())}`;
+
+  const monthStart = new Date(baseDay.getFullYear(), baseDay.getMonth(), 1);
+  const monthStartKey = `${monthStart.getFullYear()}${pad(monthStart.getMonth() + 1)}${pad(monthStart.getDate())}`;
+
+  let startKey: string;
+  let label: string;
+  if (effectiveRange === 'today') {
+    startKey = todayKey;
+    label = 'hoy';
+  } else if (effectiveRange === '7d') {
+    startKey = sevenDaysAgoKey;
+    label = 'últimos 7 días';
+  } else {
+    startKey = monthStartKey;
+    label = 'este mes';
+  }
+
+  return { startKey, label };
+}
+
+function formatProgressDate(raw: string): string {
+  if (raw.length !== 8) return raw;
+  const year = raw.slice(0, 4);
+  const month = raw.slice(4, 6);
+  const day = raw.slice(6, 8);
+  return `${day}/${month}/${year}`;
+}
+
+export function ProgressOverview({ range }: ProgressOverviewProps) {
   const { user } = useAuth();
   const { profile } = useUserProfile();
+
+  const effectiveRange: ProgressRange = range ?? '7d';
 
   const [entries, setEntries] = useState<ProgressEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +102,6 @@ export function ProgressOverview() {
 
     load();
   }, [user]);
-
   useEffect(() => {
     if (!user) return;
 
@@ -71,16 +118,12 @@ export function ProgressOverview() {
           return { id: docSnap.id, ...data };
         });
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const sevenDaysAgo = new Date(today);
-        sevenDaysAgo.setDate(today.getDate() - 6);
-        const pad = (n: number) => n.toString().padStart(2, '0');
-        const sevenDaysAgoKey = `${sevenDaysAgo.getFullYear()}${pad(sevenDaysAgo.getMonth() + 1)}${pad(sevenDaysAgo.getDate())}`;
+        // Resumen de entrenamientos siempre basado en los últimos 7 días
+        const { startKey } = getRangeConfig('7d');
 
-        const lastWeekEntries = docs.filter((entry) => entry.fecha >= sevenDaysAgoKey);
-        const sessions = lastWeekEntries.length;
-        const minutes = lastWeekEntries.reduce((acc, entry) => acc + (entry.tiempo ?? 0), 0);
+        const rangeEntries = docs.filter((entry) => entry.fecha >= startKey);
+        const sessions = rangeEntries.length;
+        const minutes = rangeEntries.reduce((acc, entry) => acc + (entry.tiempo ?? 0), 0);
 
         setTrainingStats({ sessions, minutes });
       } catch (err) {
@@ -92,13 +135,17 @@ export function ProgressOverview() {
     loadTrainings();
   }, [user]);
 
-  const weightPoints: WeightPoint[] = useMemo(
-    () =>
-      entries
-        .filter((e) => e.peso != null)
-        .map((e) => ({ fecha: e.fecha, value: e.peso as number })),
-    [entries],
-  );
+  const weightPoints: WeightPoint[] = useMemo(() => {
+    const { startKey } = getRangeConfig(effectiveRange);
+
+    const allPoints = entries
+      .filter((e) => e.peso != null)
+      .map((e) => ({ fecha: e.fecha, value: e.peso as number }));
+
+    const rangePoints = allPoints.filter((p) => p.fecha >= startKey);
+    if (rangePoints.length >= 2) return rangePoints;
+    return allPoints;
+  }, [entries, effectiveRange]);
 
   const weightGoal = profile?.weightGoalKg ?? null;
 
@@ -111,7 +158,9 @@ export function ProgressOverview() {
     const allValues = weightGoal != null ? [...values, weightGoal] : values;
     const min = Math.min(...allValues);
     const max = Math.max(...allValues);
-    const padding = (max - min || 1) * 0.1;
+
+    const rawSpan = max - min || 1;
+    const padding = rawSpan * 0.15;
     const yMin = min - padding;
     const yMax = max + padding;
 
@@ -143,21 +192,22 @@ export function ProgressOverview() {
       })
       .join(' ');
 
-    const goalY =
-      weightGoal != null
-        ? yForValue(weightGoal)
-        : null;
+    const goalY = weightGoal != null ? yForValue(weightGoal) : null;
+
+    let goalBandTop: number | null = null;
+    let goalBandBottom: number | null = null;
+    if (weightGoal != null) {
+      const bandHalf = 2; // ±2 kg alrededor del objetivo
+      const bandMin = weightGoal - bandHalf;
+      const bandMax = weightGoal + bandHalf;
+      const yBandMin = yForValue(bandMin);
+      const yBandMax = yForValue(bandMax);
+      goalBandTop = Math.min(yBandMin, yBandMax);
+      goalBandBottom = Math.max(yBandMin, yBandMax);
+    }
 
     const first = weightPoints[0];
     const last = weightPoints[weightPoints.length - 1];
-
-    const formatDate = (raw: string) => {
-      if (raw.length !== 8) return raw;
-      const year = raw.slice(0, 4);
-      const month = raw.slice(4, 6);
-      const day = raw.slice(6, 8);
-      return `${day}/${month}/${year}`;
-    };
 
     return {
       width,
@@ -167,27 +217,22 @@ export function ProgressOverview() {
       innerHeight,
       pathD,
       goalY,
+      goalBandTop,
+      goalBandBottom,
       yMin,
       yMax,
-      firstLabel: formatDate(first.fecha),
-      lastLabel: formatDate(last.fecha),
+      firstLabel: formatProgressDate(first.fecha),
+      lastLabel: formatProgressDate(last.fecha),
       firstValue: first.value,
       lastValue: last.value,
     };
   }, [weightPoints, weightGoal]);
 
   const trends = useMemo(() => {
-    // Ventana de últimos 7 días (incluyendo hoy)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(today.getDate() - 6);
+    const { startKey, label: rangeLabel } = getRangeConfig(effectiveRange);
 
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    const sevenDaysAgoKey = `${sevenDaysAgo.getFullYear()}${pad(sevenDaysAgo.getMonth() + 1)}${pad(sevenDaysAgo.getDate())}`;
-
-    // Solo entradas de los últimos 7 días (formato fecha yyyymmdd)
-    const recentEntries = entries.filter((e) => e.fecha >= sevenDaysAgoKey);
+    // Solo entradas en el rango seleccionado (formato fecha yyyymmdd)
+    const recentEntries = entries.filter((e) => e.fecha >= startKey);
 
     const metricLabels: Record<keyof Omit<ProgressEntry, 'id' | 'id_usuario' | 'fecha'>, string> = {
       peso: 'Peso',
@@ -197,19 +242,12 @@ export function ProgressOverview() {
       brazo: 'Brazo',
     };
 
-    const units: Record<string, string> = {
-      peso: 'kg',
-      cintura: 'cm',
-      cadera: 'cm',
-      pecho: 'cm',
-      brazo: 'cm',
-    };
-
     const result: {
       key: keyof typeof metricLabels;
       label: string;
       arrow: string;
       description: string;
+      status: 'good' | 'neutral' | 'warn' | 'bad';
     }[] = [];
 
     (Object.keys(metricLabels) as (keyof typeof metricLabels)[]).forEach((key) => {
@@ -217,13 +255,18 @@ export function ProgressOverview() {
         [K in typeof key]: number;
       })[];
 
-      // Necesitamos al menos 2 medidas en los últimos 7 días
+      // Necesitamos al menos 2 medidas en el rango seleccionado
       if (series.length < 2) {
+        const remaining = 2 - series.length;
         result.push({
           key,
           label: metricLabels[key],
           arrow: '→',
-          description: 'Sin datos suficientes (últimos 7 días)',
+          description:
+            series.length === 0
+              ? `Sin datos recientes. Añade 2 mediciones para ver la tendencia.`
+              : `Añade ${remaining} medición más para ver la tendencia (${rangeLabel}).`,
+          status: 'neutral',
         });
         return;
       }
@@ -231,36 +274,174 @@ export function ProgressOverview() {
       const first = series[0][key];
       const last = series[series.length - 1][key];
       const diff = last - first;
-      const unit = units[key];
+      const unit = key === 'peso' ? 'kg' : 'cm';
 
       const threshold = key === 'peso' ? 0.1 : 0.5;
+      const absDiff = Math.abs(diff);
 
-      if (diff > threshold) {
+      // Detección de cambios atípicos
+      const outlierLimit = key === 'peso' ? 6 : 12;
+      if (absDiff > outlierLimit) {
         result.push({
           key,
           label: metricLabels[key],
-          arrow: '↑',
-          description: `Creciente (+${diff.toFixed(1)} ${unit})`,
+          arrow: '⚠️',
+          description: `Cambio atípico (${diff.toFixed(1)} ${unit}). Revisa la medición.`,
+          status: 'bad',
         });
-      } else if (diff < -threshold) {
-        result.push({
-          key,
-          label: metricLabels[key],
-          arrow: '↓',
-          description: `Decreciente (${diff.toFixed(1)} ${unit})`,
-        });
+        return;
+      }
+
+      if (key === 'peso') {
+        if (diff < -1.5) {
+          result.push({
+            key,
+            label: metricLabels[key],
+            arrow: '↓',
+            description: `Descenso rápido (${diff.toFixed(1)} ${unit}). Revisa ingesta/calorías.`,
+            status: 'bad',
+          });
+        } else if (diff < -0.3) {
+          result.push({
+            key,
+            label: metricLabels[key],
+            arrow: '↓',
+            description: `Descenso moderado (${diff.toFixed(1)} ${unit}) en ${rangeLabel}.`,
+            status: 'neutral',
+          });
+        } else if (absDiff <= 0.3) {
+          result.push({
+            key,
+            label: metricLabels[key],
+            arrow: '→',
+            description: `Peso estable (${diff.toFixed(1)} ${unit}) en ${rangeLabel}.`,
+            status: 'neutral',
+          });
+        } else if (diff > 1.0) {
+          result.push({
+            key,
+            label: metricLabels[key],
+            arrow: '↑',
+            description: `Subida rápida (+${diff.toFixed(1)} ${unit}). Asegúrate de que sea ganancia de calidad.`,
+            status: 'warn',
+          });
+        } else {
+          result.push({
+            key,
+            label: metricLabels[key],
+            arrow: '↑',
+            description: `Subida moderada (+${diff.toFixed(1)} ${unit}) en ${rangeLabel}.`,
+            status: 'neutral',
+          });
+        }
+      } else if (key === 'cintura') {
+        if (diff < -1) {
+          result.push({
+            key,
+            label: metricLabels[key],
+            arrow: '↓',
+            description: `Buen descenso de cintura (${diff.toFixed(1)} ${unit}).`,
+            status: 'good',
+          });
+        } else if (diff > 1) {
+          result.push({
+            key,
+            label: metricLabels[key],
+            arrow: '↑',
+            description: `Aumento de cintura (+${diff.toFixed(1)} ${unit}). Vigila la ingesta y el estrés.`,
+            status: 'bad',
+          });
+        } else {
+          result.push({
+            key,
+            label: metricLabels[key],
+            arrow: '→',
+            description: `Cintura estable (${rangeLabel}).`,
+            status: 'good',
+          });
+        }
       } else {
-        result.push({
-          key,
-          label: metricLabels[key],
-          arrow: '→',
-          description: 'Neutro (últimos 7 días)',
-        });
+        if (diff > 1) {
+          result.push({
+            key,
+            label: metricLabels[key],
+            arrow: '↑',
+            description: `Aumento significativo (+${diff.toFixed(1)} ${unit}). Puede reflejar ganancia muscular.`,
+            status: 'good',
+          });
+        } else if (diff < -1) {
+          result.push({
+            key,
+            label: metricLabels[key],
+            arrow: '↓',
+            description: `Descenso (${diff.toFixed(1)} ${unit}). Revisa volumen de entrenamiento y nutrición.`,
+            status: 'warn',
+          });
+        } else {
+          result.push({
+            key,
+            label: metricLabels[key],
+            arrow: '→',
+            description: `Estable (${rangeLabel}).`,
+            status: 'neutral',
+          });
+        }
       }
     });
 
     return result;
-  }, [entries]);
+  }, [entries, effectiveRange]);
+
+  const weightSummary = useMemo(() => {
+    if (weightPoints.length < 2) {
+      return {
+        tone: 'neutral' as const,
+        text: 'Añade al menos 2 registros de peso en este rango para ver una tendencia clara.',
+      };
+    }
+
+    const { label: rangeLabel } = getRangeConfig(effectiveRange);
+    const first = weightPoints[0].value;
+    const last = weightPoints[weightPoints.length - 1].value;
+    const diff = last - first;
+    const diffText = `${diff > 0 ? '+' : ''}${diff.toFixed(1)} kg`;
+
+    let tone: 'good' | 'neutral' | 'warn' | 'bad' = 'neutral';
+    let baseText: string;
+
+    if (diff < -1.5) {
+      baseText = `Descenso rápido de peso (${diffText}) en ${rangeLabel}.`;
+      tone = 'bad';
+    } else if (diff < -0.3) {
+      baseText = `Descenso moderado de peso (${diffText}) en ${rangeLabel}.`;
+      tone = 'neutral';
+    } else if (Math.abs(diff) <= 0.3) {
+      baseText = `Peso prácticamente estable (${diffText}) en ${rangeLabel}.`;
+      tone = 'neutral';
+    } else if (diff > 1.0) {
+      baseText = `Subida rápida de peso (${diffText}) en ${rangeLabel}.`;
+      tone = 'warn';
+    } else {
+      baseText = `Subida moderada de peso (${diffText}) en ${rangeLabel}.`;
+      tone = 'neutral';
+    }
+
+    let goalText = '';
+    if (weightGoal != null) {
+      const toGoal = weightGoal - last;
+      const absToGoal = Math.abs(toGoal).toFixed(1);
+      if (Math.abs(toGoal) < 0.3) {
+        goalText = ' Objetivo de peso prácticamente alcanzado.';
+        tone = tone === 'bad' ? 'warn' : 'good';
+      } else if (toGoal > 0) {
+        goalText = ` Faltan aproximadamente ${absToGoal} kg para tu objetivo (${weightGoal} kg).`;
+      } else {
+        goalText = ` Has superado tu objetivo en ${absToGoal} kg (objetivo ${weightGoal} kg).`;
+      }
+    }
+
+    return { tone, text: `${baseText}${goalText}` };
+  }, [effectiveRange, weightGoal, weightPoints]);
 
   if (!user) {
     return null;
@@ -292,6 +473,16 @@ export function ProgressOverview() {
                 fill="#f9fafb"
                 stroke="#e5e7eb"
               />
+
+              {chartData.goalBandTop != null && chartData.goalBandBottom != null && (
+                <rect
+                  x={chartData.margin.left}
+                  y={chartData.goalBandTop}
+                  width={chartData.innerWidth}
+                  height={chartData.goalBandBottom - chartData.goalBandTop}
+                  fill="rgba(34, 197, 94, 0.06)"
+                />
+              )}
 
               {chartData.goalY != null && (
                 <g>
@@ -345,16 +536,30 @@ export function ProgressOverview() {
                 const cx = xForIndex(index);
                 const cy = yForValue(p.value);
 
+                const isFirst = index === 0;
+                const isLast = index === weightPoints.length - 1;
+                const radius = isFirst || isLast ? 4 : 3;
+
+                const prev = index > 0 ? weightPoints[index - 1].value : null;
+                const diff = prev != null ? p.value - prev : 0;
+                const tooltip = prev != null
+                  ? `${formatProgressDate(p.fecha)} • ${p.value.toFixed(1)} kg • ${
+                      diff >= 0 ? '+' : ''
+                    }${diff.toFixed(1)} kg vs anterior`
+                  : `${formatProgressDate(p.fecha)} • ${p.value.toFixed(1)} kg`;
+
                 return (
                   <circle
                     key={p.fecha + index}
                     cx={cx}
                     cy={cy}
-                    r={3}
+                    r={radius}
                     fill="#2563eb"
                     stroke="#ffffff"
                     strokeWidth={1}
-                  />
+                  >
+                    <title>{tooltip}</title>
+                  </circle>
                 );
               })}
 
@@ -378,40 +583,49 @@ export function ProgressOverview() {
             </svg>
 
             <div className="progress-overview__chart-summary">
-              <div>
+              <div className="progress-overview__chart-summary-item progress-overview__chart-summary-item--start">
                 <span className="progress-overview__chart-label">Inicio</span>
                 <span className="progress-overview__chart-value">
                   {chartData.firstValue.toFixed(1)} kg
                 </span>
               </div>
-              <div>
+              <div className="progress-overview__chart-summary-item progress-overview__chart-summary-item--center">
                 <span className="progress-overview__chart-label">Actual</span>
                 <span className="progress-overview__chart-value">
                   {chartData.lastValue.toFixed(1)} kg
                 </span>
               </div>
+              <div className="progress-overview__chart-summary-item progress-overview__chart-summary-item--end">
+                <span className="progress-overview__chart-label">Objetivo</span>
+                <span className="progress-overview__chart-value">
+                  {weightGoal != null ? `${weightGoal.toFixed(1)} kg` : '—'}
+                </span>
+              </div>
             </div>
+
+            {weightSummary && (
+              <p
+                className={
+                  `progress-overview__weight-summary progress-overview__weight-summary--${weightSummary.tone}`
+                }
+              >
+                {weightSummary.text}
+              </p>
+            )}
           </div>
         )}
       </div>
 
       <div className="progress-overview__trends">
         <h3 className="progress-overview__trends-title">Tendencia de medidas</h3>
-        {trainingStats && (
-          <div className="progress-overview__workout-summary">
-            <div>
-              <span className="progress-overview__workout-label">Entrenamientos (últimos 7 días)</span>
-              <span className="progress-overview__workout-value">{trainingStats.sessions}</span>
-            </div>
-            <div>
-              <span className="progress-overview__workout-label">Minutos entrenados (últimos 7 días)</span>
-              <span className="progress-overview__workout-value">{trainingStats.minutes}</span>
-            </div>
-          </div>
-        )}
         <div className="progress-overview__trends-grid">
           {trends.map((item) => (
-            <div key={item.key} className="progress-overview__trend-card">
+            <div
+              key={String(item.key)}
+              className={
+                `progress-overview__trend-card progress-overview__trend-card--${item.status}`
+              }
+            >
               <div className="progress-overview__trend-header">
                 <span className="progress-overview__trend-label">{item.label}</span>
                 <span className="progress-overview__trend-arrow">{item.arrow}</span>

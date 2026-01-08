@@ -1,13 +1,14 @@
 /* Contenedor principal del bloque de nutrición de hoy */
 .today-nutrition {
   padding: 16px;
-  border-radius: 0;
-  border: none;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 100%;
   box-sizing: border-box;
+  background-color: #ffffff;
 }
 
 .today-nutrition__header {
@@ -36,7 +37,6 @@
 
 /* Leyenda para móviles */
 .today-nutrition__legend {
-  margin-top: 12px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -80,15 +80,15 @@
 
 /* Bloque de macros */
 .today-nutrition-macros {
-  margin-top: 8px;
   padding: 12px 16px 16px;
-  border-radius: 0;
-  border: none;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
   width: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  background-color: #ffffff;
 }
 
 .today-nutrition-macros__title {
