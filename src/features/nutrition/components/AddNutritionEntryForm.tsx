@@ -93,17 +93,40 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
     event.preventDefault();
 
     if (!aiFile) {
-      console.log('AI submit sin imagen seleccionada', { info: aiInfo });
+      console.log('AI submit sin imagen seleccionada', { info: aiInfo, titulo });
       return;
     }
 
     const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      console.log('AI submit', {
-        imageBase64: result,
-        info: aiInfo,
-      });
+    reader.onload = async () => {
+      const result = reader.result as string | null;
+      if (!result) {
+        console.error('No se ha podido leer la imagen para la llamada AI');
+        return;
+      }
+
+      try {
+        const response = await fetch('http://127.0.0.1:5000/process_meal', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            image: result,
+            title: titulo,
+            description: aiInfo,
+          }),
+        });
+
+        const data = await response.json();
+        console.log('AI response /process_meal', data);
+
+        if (response.ok && onSaved) {
+          onSaved();
+        }
+      } catch (err) {
+        console.error('Error llamando a /process_meal', err);
+      }
     };
     reader.readAsDataURL(aiFile);
   };

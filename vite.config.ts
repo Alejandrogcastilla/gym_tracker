@@ -12,4 +12,14 @@ export default defineConfig({
       '@types': path.resolve(__dirname, 'src/types'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:5000',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (urlPath) => urlPath.replace(/^\/api/, ''),
+      },
+    },
+  },
 });
