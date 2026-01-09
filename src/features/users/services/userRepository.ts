@@ -4,7 +4,7 @@ import type { UserProfile } from '@/types/user';
 
 const usersCollection = collection(firebaseDb, 'users');
 
-export async function upsertUserProfile(profile: UserProfile): Promise<void> {
+export async function upsertUserProfile(profile: Partial<UserProfile> & { id: string }): Promise<void> {
   const ref = doc(usersCollection, profile.id);
   await setDoc(ref, profile, { merge: true });
 }

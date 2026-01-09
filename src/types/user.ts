@@ -12,4 +12,6 @@ export interface UserProfile {
   createdAt: string; // yyyymmdd
   // Peso objetivo del usuario en kg (opcional)
   weightGoalKg?: number | null;
+  // Indica si el usuario ha aceptado generar imágenes con IA
+  accept_ai?: boolean;
 }

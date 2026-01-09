@@ -55,6 +55,7 @@ export function RegisterPage() {
         age: parsedAge,
         goal,
         createdAt: formatTodayAsYYYYMMDD(),
+        accept_ai: false,
       };
 
       await upsertUserProfile(profile);

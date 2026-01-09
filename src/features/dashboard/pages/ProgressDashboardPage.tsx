@@ -57,20 +57,6 @@ export function ProgressDashboardPage() {
             <AddTrainingEntryForm
               onOpenHistory={() => setShowTrainingHistoryModal(true)}
             />
-            {/* Actividad reciente: últimos 7 días */}
-            <div className="progress-overview__activity">
-              <h3 className="progress-overview__activity-title">Actividad reciente</h3>
-              <div className="progress-overview__activity-grid">
-                <div>
-                  <span className="progress-overview__activity-label">Entrenamientos (últimos 7 días)</span>
-                  <span className="progress-overview__activity-value">{/* TODO: sesiones */}</span>
-                </div>
-                <div>
-                  <span className="progress-overview__activity-label">Minutos entrenados (últimos 7 días)</span>
-                  <span className="progress-overview__activity-value">{/* TODO: minutos */}</span>
-                </div>
-              </div>
-            </div>
           </>
         )}
         {progressTab === 'measures' && <AddMeasurementsForm />}

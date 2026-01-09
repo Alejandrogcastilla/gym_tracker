@@ -164,6 +164,22 @@
   justify-content: space-between;
 }
 
+.progress-overview__activity-grid--widgets {
+  flex-direction: row;
+  gap: 8px;
+}
+
+.progress-overview__activity-widget {
+  flex: 1 1 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .progress-overview__activity-label {
   color: #6b7280;
 }
