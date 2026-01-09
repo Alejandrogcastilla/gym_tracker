@@ -34,6 +34,11 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
   const [success, setSuccess] = useState<string | null>(null);
   const [aiFile, setAiFile] = useState<File | null>(null);
   const [aiInfo, setAiInfo] = useState('');
+  const [aiSaving, setAiSaving] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiSuccess, setAiSuccess] = useState<string | null>(null);
+
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string | undefined;
 
   if (!user) {
     return null;
@@ -97,22 +102,36 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
       return;
     }
 
+    if (!apiBaseUrl) {
+      setAiError('Configuración de API no encontrada. Revisa VITE_API_BASE_URL.');
+      return;
+    }
+
+    setAiError(null);
+    setAiSuccess(null);
+    setAiSaving(true);
+
     const reader = new FileReader();
     reader.onload = async () => {
       const result = reader.result as string | null;
       if (!result) {
         console.error('No se ha podido leer la imagen para la llamada AI');
+        setAiError('No se ha podido leer la imagen.');
+        setAiSaving(false);
         return;
       }
 
+      // El backend espera solo el contenido base64, sin el prefijo "data:image/...;base64,"
+      const base64Image = result.includes(',') ? result.split(',')[1] : result;
+
       try {
-        const response = await fetch('http://127.0.0.1:5000/process_meal', {
+        const response = await fetch(`${apiBaseUrl}/process_meal`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            image: result,
+            image: base64Image,
             title: titulo,
             description: aiInfo,
           }),
@@ -120,12 +139,41 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
 
         const data = await response.json();
         console.log('AI response /process_meal', data);
+        if (!response.ok) {
+          setAiError('Ha habido un error procesando la imagen. Inténtalo de nuevo.');
+          return;
+        }
 
-        if (response.ok && onSaved) {
+        const proteinasAi = Number((data as any).proteinas ?? 0);
+        const hidratosAi = Number((data as any).hidratos ?? 0);
+        const grasasAi = Number((data as any).grasas ?? 0);
+        const verdurasAi = Number((data as any).verduras ?? 0);
+
+        const entry: Omit<NutritionEntry, 'id'> = {
+          id_usuario: user.uid,
+          fecha: formatNowAsYYYYMMDDHH(),
+          proteinas: Number.isNaN(proteinasAi) ? 0 : proteinasAi,
+          hidratos: Number.isNaN(hidratosAi) ? 0 : hidratosAi,
+          grasas: Number.isNaN(grasasAi) ? 0 : grasasAi,
+          verduras: Number.isNaN(verdurasAi) ? 0 : verdurasAi,
+          titulo: titulo.trim() || null,
+          notas: aiInfo.trim() || null,
+        };
+
+        await addDoc(nutritionCollection, entry);
+
+        setAiSuccess('Registro añadido por IA');
+        setAiFile(null);
+        setAiInfo('');
+
+        if (onSaved) {
           onSaved();
         }
       } catch (err) {
         console.error('Error llamando a /process_meal', err);
+        setAiError('Ha habido un error procesando la imagen. Inténtalo de nuevo.');
+      } finally {
+        setAiSaving(false);
       }
     };
     reader.readAsDataURL(aiFile);
@@ -315,9 +363,16 @@ export function AddNutritionEntryForm({ onSaved }: AddNutritionEntryFormProps) {
             flujo. Más adelante se conectará con un modelo que estime los macros automáticamente.
           </p>
 
-          <button type="submit" className="nutrition-entry-modal__submit">
-            Probar inserción por IA
+          <button
+            type="submit"
+            className="nutrition-entry-modal__submit"
+            disabled={aiSaving}
+          >
+            {aiSaving ? 'Procesando…' : 'Probar inserción por IA'}
           </button>
+
+          {aiError && <p className="nutrition-entry-modal__error">{aiError}</p>}
+          {aiSuccess && <p className="nutrition-entry-modal__success">{aiSuccess}</p>}
         </form>
       )}
     </section>

@@ -12,7 +12,8 @@ export function PhotosPage() {
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeMoment, setActiveMoment] = useState<'before' | 'now' | 'future'>('now');
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [futureRevealed, setFutureRevealed] = useState(false);
 
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
@@ -44,6 +45,9 @@ export function PhotosPage() {
             : [];
 
         setImages(received);
+        if (received.length > 0) {
+          setActiveIndex(received.length - 1);
+        }
       } catch (err) {
         console.error(err);
         setError('No se han podido cargar tus fotos. Inténtalo más tarde.');
@@ -61,16 +65,30 @@ export function PhotosPage() {
 
   const hasAnyImages = images.length > 0;
 
-  const beforeImage = images[0] ?? null;
-  const nowImage = hasAnyImages ? images[images.length - 1] : null;
-  const futureImage = images.length >= 3 ? images[2] : nowImage;
+  const currentImage = hasAnyImages ? images[activeIndex] ?? null : null;
+  const isFuture = hasAnyImages && activeIndex === images.length - 1;
 
-  const currentImage =
-    activeMoment === 'before'
-      ? beforeImage
-      : activeMoment === 'now'
-        ? nowImage
-        : futureImage;
+  const goPrev = () => {
+    if (!hasAnyImages) return;
+    setActiveIndex((prev) => {
+      const next = prev === 0 ? images.length - 1 : prev - 1;
+      if (next !== images.length - 1) {
+        setFutureRevealed(false);
+      }
+      return next;
+    });
+  };
+
+  const goNext = () => {
+    if (!hasAnyImages) return;
+    setActiveIndex((prev) => {
+      const next = prev === images.length - 1 ? 0 : prev + 1;
+      if (next !== images.length - 1) {
+        setFutureRevealed(false);
+      }
+      return next;
+    });
+  };
 
   const handleOpenUpload = () => {
     setUploadFile(null);
@@ -108,80 +126,67 @@ export function PhotosPage() {
 
   return (
     <main className="dashboard-page">
-      <nav
-        className="app-top-nav"
-        aria-label="Navegación de momentos de foto"
-      >
-        <button
-          type="button"
-          onClick={() => setActiveMoment('before')}
-          className={`app-top-nav__item${
-            activeMoment === 'before' ? ' app-top-nav__item--active' : ''
-          }`}
-        >
-          <span className="material-symbols-outlined">history</span>
-          <span>Antes</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveMoment('now')}
-          className={`app-top-nav__item${
-            activeMoment === 'now' ? ' app-top-nav__item--active' : ''
-          }`}
-        >
-          <span className="material-symbols-outlined">today</span>
-          <span>Ahora</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveMoment('future')}
-          className={`app-top-nav__item${
-            activeMoment === 'future' ? ' app-top-nav__item--active' : ''
-          }`}
-        >
-          <span className="material-symbols-outlined">flag</span>
-          <span>Objetivo</span>
-        </button>
-      </nav>
+      <section className="dashboard-container photos-page-container">
+        <div className="photos-main">
+          {loading ? (
+            <p className="photos-status">Cargando tus fotos...</p>
+          ) : error || !hasAnyImages ? (
+            <div className="photos-empty-card">
+              <p className="photos-empty-title">No se han encontrado fotos</p>
+              <p className="photos-empty-text">Sube una para tener un seguimiento de tu progreso.</p>
+            </div>
+          ) : (
+            <div className="photos-carousel">
+              <article className="photos-card">
+                <div className="photos-card__header">
+                  <button
+                    type="button"
+                    className="photos-arrow photos-arrow--left"
+                    onClick={goPrev}
+                    aria-label="Foto anterior"
+                  >
+                    <span className="material-symbols-outlined">chevron_left</span>
+                  </button>
 
-      <section className="dashboard-container">
-        {loading ? (
-          <p className="photos-status">Cargando tus fotos...</p>
-        ) : error ? (
-          <p className="photos-status photos-status--error">{error}</p>
-        ) : !hasAnyImages ? (
-          <div className="photos-empty-card">
-            <p className="photos-empty-title">Aún no tienes ninguna imagen</p>
-            <p className="photos-empty-text">Añade tu primera foto para empezar a ver tu progreso.</p>
-          </div>
-        ) : (
-          <div className="photos-carousel">
-            <article className="photos-card">
-              <p className="photos-card__label">
-                {activeMoment === 'before' && 'Tu punto de partida'}
-                {activeMoment === 'now' && 'Cómo estás hoy'}
-                {activeMoment === 'future' && 'Hacia dónde vas'}
-              </p>
-              {currentImage ? (
-                <img
-                  src={toDataUrl(currentImage)}
-                  alt={
-                    activeMoment === 'before'
-                      ? 'Foto de progreso inicial'
-                      : activeMoment === 'now'
-                        ? 'Foto de progreso actual'
-                        : 'Foto de progreso objetivo'
-                  }
-                  className="photos-card__image"
-                />
-              ) : (
-                <div className="photos-card__placeholder">
-                  📷 Aún no hay foto para este momento
+                  <p className="photos-card__label">
+                    Foto {activeIndex + 1} de {images.length}
+                  </p>
+
+                  <button
+                    type="button"
+                    className="photos-arrow photos-arrow--right"
+                    onClick={goNext}
+                    aria-label="Foto siguiente"
+                  >
+                    <span className="material-symbols-outlined">chevron_right</span>
+                  </button>
                 </div>
-              )}
-            </article>
-          </div>
-        )}
+                {currentImage ? (
+                  isFuture && !futureRevealed ? (
+                    <button
+                      type="button"
+                      className="photos-card__future-cover"
+                      onClick={() => setFutureRevealed(true)}
+                    >
+                      <span className="photos-card__future-title">Objetivo oculto</span>
+                      <span className="photos-card__future-subtitle">Toca para desvelar tu foto objetivo</span>
+                    </button>
+                  ) : (
+                    <img
+                      src={toDataUrl(currentImage)}
+                      alt={isFuture ? 'Foto de progreso objetivo' : `Foto de progreso ${activeIndex + 1}`}
+                      className="photos-card__image"
+                    />
+                  )
+                ) : (
+                  <div className="photos-card__placeholder">
+                    📷 Aún no hay foto disponible
+                  </div>
+                )}
+              </article>
+            </div>
+          )}
+        </div>
 
         <button
           type="button"
